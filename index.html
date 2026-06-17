@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Avend · Simulador de Franquia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   Avend · Simulador — Design System
+   Linguagem: Linear (DESIGN.md) — canvas #010102, escada de
+   superfícies charcoal, bordas hairline, acento lavanda único.
+   Tipografia: Inter (substituto do Linear Display/Text).
+   Base de conteúdo: Handoff técnico do simulador AVEND.
+   ============================================================ */
+:root{
+  /* — Acento único (lavanda Linear) — */
+  --primary:       #5e6ad2;
+  --primary-hover: #828fff;
+  --primary-focus: #5e69d1;
+  --on-primary:    #ffffff;
+
+  /* — Canvas + escada de superfícies — */
+  --canvas:    #010102;
+  --surface-1: #0f1011;
+  --surface-2: #141516;
+  --surface-3: #18191a;
+  --surface-4: #191a1b;
+
+  /* — Hairlines — */
+  --hair:     #23252a;
+  --hair-strong:#34343a;
+  --hair-tert:#3e3e44;
+
+  /* — Texto — */
+  --ink:        #f7f8f8;
+  --ink-muted:  #d0d6e0;
+  --ink-subtle: #8a8f98;
+  --ink-tert:   #62666d;
+
+  /* — Semântico (único permitido) + dados de gráfico — */
+  --success:#27a644;
+  --c-fat:  #5e6ad2;   /* faturamento — lavanda */
+  --c-lucro:#27a644;   /* lucro — verde sucesso */
+  --c-caixa:#828fff;   /* caixa — lavanda claro */
+  --c-patr: #7a7fad;   /* patrimônio — lavanda-gray */
+  --c-frota:#9aa2ff;
+
+  /* — Raios (escala Linear) — */
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Inter',-apple-system,'SF Pro Text',system-ui,'Segoe UI',Roboto,sans-serif;
+  font-size:16px; line-height:1.5; letter-spacing:-.05px;
+  color:var(--ink-muted); background:var(--canvas);
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+h1,h2,h3,h4{font-family:'Inter',system-ui,sans-serif;color:var(--ink);font-weight:600;letter-spacing:-.4px}
+button,input,select{font-family:inherit}
+::selection{background:rgba(94,106,210,.32)}
+:focus-visible{outline:2px solid rgba(94,105,209,.5);outline-offset:2px;border-radius:4px}
+
+/* ——— TOP NAV (Linear: dark, 56px) ——————————— */
+.topnav{
+  position:sticky; top:0; z-index:50; height:56px;
+  display:flex; align-items:center; gap:24px;
+  padding:0 max(24px,env(safe-area-inset-left));
+  background:rgba(1,1,2,.72); backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-bottom:1px solid var(--hair);
+}
+.brand-logo{height:18px;width:auto;display:block;cursor:pointer}
+/* Modo introdução: esconde navegação e CTA até iniciar atendimento */
+body.intro-mode .topnav .center,
+body.intro-mode .topnav .cta{display:none}
+.topnav .center{flex:1; display:flex; justify-content:center; gap:4px}
+.navlink{
+  appearance:none;border:0;background:transparent;cursor:pointer;
+  padding:7px 12px;border-radius:var(--r-md);
+  font-size:14px;font-weight:500;color:var(--ink-subtle);
+  transition:color .15s ease,background .15s ease;
+}
+.navlink:hover{color:var(--ink);background:var(--surface-1)}
+.navlink.active{color:var(--ink)}
+.cta{
+  border:0;cursor:pointer;background:var(--primary);color:var(--on-primary);
+  font-size:13px;font-weight:500;padding:7px 13px;border-radius:var(--r-md);white-space:nowrap;
+  transition:background .15s ease;
+}
+.cta:hover{background:var(--primary-hover)}
+
+/* ——— PÁGINAS ——————————————————————————————— */
+.page{display:none}
+.page.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap{max-width:1280px;margin:0 auto;padding:40px clamp(16px,4vw,40px) 96px}
+
+.eyebrow{font-size:13px;font-weight:500;letter-spacing:.4px;text-transform:uppercase;color:var(--primary-hover);margin-bottom:14px}
+
+/* ——— PÁGINA DE INTRODUÇÃO ————————————————— */
+.intro{min-height:calc(100vh - 56px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px clamp(16px,5vw,40px);position:relative;overflow:hidden}
+/* brilho central no azul Avend */
+.intro::before{content:'';position:absolute;top:-26%;left:50%;transform:translateX(-50%);width:min(1000px,130vw);height:640px;
+  background:radial-gradient(ellipse at center,rgba(38,78,148,.30),rgba(38,78,148,.10) 45%,transparent 72%);pointer-events:none;z-index:0}
+/* linhas de LED sutis (azul Avend) ao fundo */
+.led-lines{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.led-lines::before{content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 86px,rgba(38,78,148,.05) 86px 87px),
+             repeating-linear-gradient(0deg,transparent 0 86px,rgba(38,78,148,.04) 86px 87px);
+  -webkit-mask-image:radial-gradient(ellipse at center,#000 35%,transparent 78%);
+          mask-image:radial-gradient(ellipse at center,#000 35%,transparent 78%)}
+.led{position:absolute;top:-12%;bottom:-12%;width:1px;
+  background:linear-gradient(180deg,transparent,rgba(38,78,148,.0),rgba(38,78,148,.6) 35%,rgba(108,187,202,.55) 50%,rgba(38,78,148,.6) 65%,transparent);
+  box-shadow:0 0 16px 1px rgba(38,78,148,.5);opacity:.1;animation:ledpulse 6s ease-in-out infinite}
+.led:nth-child(1){left:14%;animation-duration:7s;animation-delay:-1s}
+.led:nth-child(2){left:30%;animation-duration:5.5s;animation-delay:-3s}
+.led:nth-child(3){left:50%;animation-duration:8s}
+.led:nth-child(4){left:70%;animation-duration:6s;animation-delay:-2s}
+.led:nth-child(5){left:86%;animation-duration:7.5s;animation-delay:-4s}
+@keyframes ledpulse{0%,100%{opacity:.06}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){ .led{animation:none;opacity:.18} }
+.intro-inner{position:relative;z-index:1;max-width:760px;display:flex;flex-direction:column;align-items:center}
+.intro-logo{height:clamp(40px,6vw,58px);width:auto;margin-bottom:30px;filter:drop-shadow(0 4px 22px rgba(38,78,148,.55))}
+.intro h1{font-size:clamp(40px,7vw,76px);font-weight:600;line-height:1.04;letter-spacing:-2.4px;color:var(--ink);margin-top:18px}
+.intro .lead{font-size:clamp(16px,2.4vw,21px);font-weight:400;line-height:1.5;letter-spacing:-.2px;color:var(--ink-subtle);margin-top:20px;max-width:54ch}
+.start-btn{margin-top:40px;border:0;cursor:pointer;background:var(--primary);color:var(--on-primary);
+  font-size:17px;font-weight:600;letter-spacing:-.1px;padding:17px 38px;border-radius:var(--r-md);
+  display:inline-flex;align-items:center;gap:10px;
+  box-shadow:0 8px 30px rgba(94,106,210,.35);transition:background .15s ease,transform .12s ease,box-shadow .15s ease}
+.start-btn:hover{background:var(--primary-hover);box-shadow:0 10px 38px rgba(94,106,210,.5)}
+.start-btn:active{transform:scale(.97)}
+.start-btn svg{width:18px;height:18px}
+.intro-feats{display:flex;gap:14px;margin-top:48px;flex-wrap:wrap;justify-content:center}
+.intro-feat{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:18px 22px;width:230px;text-align:left}
+.intro-feat .ic{width:30px;height:30px;border-radius:var(--r-sm);background:var(--surface-3);display:flex;align-items:center;justify-content:center;color:var(--primary-hover);margin-bottom:12px}
+.intro-feat h4{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.intro-feat p{font-size:13px;color:var(--ink-subtle);line-height:1.45}
+.page-head{margin-bottom:36px}
+.page-head h1{font-size:40px;font-weight:600;line-height:1.15;letter-spacing:-1px;color:var(--ink)}
+.page-head p{font-size:18px;line-height:1.5;letter-spacing:-.1px;color:var(--ink-subtle);margin-top:14px;max-width:62ch}
+
+/* ——— SIMULADOR · grid ————————————————————— */
+.sim-grid{display:grid;grid-template-columns:340px minmax(0,1fr);gap:24px;align-items:start}
+
+.panel{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px}
+.controls{position:sticky;top:80px}
+.controls h3{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-tert);margin:0 0 14px}
+.controls h3:not(:first-child){margin-top:26px;padding-top:22px;border-top:1px solid var(--hair)}
+
+/* Chips de cenário (pricing-tab pill toggle) */
+.presets{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip{
+  appearance:none;border:1px solid var(--hair);cursor:pointer;
+  padding:8px 12px;border-radius:var(--r-pill);background:var(--canvas);
+  font-size:13px;font-weight:500;color:var(--ink-subtle);
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.chip:hover{color:var(--ink);border-color:var(--hair-strong)}
+.chip.active{background:var(--surface-3);color:var(--ink);border-color:var(--hair-strong)}
+
+/* Sliders (accent lavanda nativo) */
+.field{margin-bottom:18px}
+.field .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:9px}
+.field label{font-size:13px;font-weight:400;color:var(--ink-subtle)}
+input[type=range]{width:100%;height:4px;accent-color:var(--primary);cursor:pointer}
+/* Input numérico editável (digitável) */
+.numwrap{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;
+  background:var(--surface-2);border:1px solid var(--hair);border-radius:var(--r-sm);
+  padding:3px 8px;transition:border-color .15s ease,box-shadow .15s ease}
+.numwrap:focus-within{border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.22)}
+.numwrap .pfx{font-size:13px;color:var(--ink-subtle)}
+.numin{width:56px;border:0;background:transparent;color:var(--ink);
+  font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;
+  -moz-appearance:textfield}
+.numin:focus{outline:none}
+.numin::-webkit-outer-spin-button,.numin::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+/* Select / dropdown (text-input Linear) */
+.selectwrap{position:relative;margin-bottom:14px}
+.selectwrap label{display:block;font-size:12px;font-weight:400;color:var(--ink-subtle);margin-bottom:7px}
+select{
+  appearance:none;-webkit-appearance:none;width:100%;height:44px;
+  border:1px solid var(--hair);border-radius:var(--r-md);background:var(--surface-1);
+  padding:0 38px 0 12px;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;
+  transition:border-color .15s ease;
+}
+select:hover{border-color:var(--hair-strong)}
+select:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.25)}
+option{background:var(--surface-2);color:var(--ink)}
+.selectwrap::after{content:'';position:absolute;right:15px;bottom:18px;width:7px;height:7px;border-right:1.5px solid var(--ink-subtle);border-bottom:1.5px solid var(--ink-subtle);transform:rotate(45deg);pointer-events:none}
+
+/* ——— Resultados ——————————————————————————— */
+.results{display:flex;flex-direction:column;gap:24px;min-width:0}
+
+.hero-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.kpi{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:20px;position:relative}
+.kpi::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.kpi .label{font-size:13px;color:var(--ink-subtle);font-weight:400}
+.kpi .val{font-size:30px;font-weight:600;line-height:1.05;letter-spacing:-1px;color:var(--ink);margin:12px 0 5px;font-variant-numeric:tabular-nums}
+.kpi .sub{font-size:12px;color:var(--ink-tert)}
+.kpi.feature{background:var(--surface-2);border-color:var(--hair-strong)}
+.kpi.feature .val{color:var(--primary-hover)}
+
+.mini-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mini{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px}
+.mini .label{font-size:12px;color:var(--ink-subtle)}
+.mini .val{font-size:20px;font-weight:600;color:var(--ink);margin-top:5px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
+.mini .val.good{color:var(--success)}
+
+.card{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-xl);padding:24px}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.card-head h3{font-size:22px;font-weight:500;letter-spacing:-.4px;color:var(--ink)}
+.card-head .selectwrap{margin:0}
+.card-head select{height:36px;width:auto;font-size:13px;padding:0 34px 0 12px}
+.card-head .selectwrap::after{bottom:15px}
+
+/* Gráficos */
+.charts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.chart-box{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:20px}
+.chart-box h4{font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px;letter-spacing:-.2px}
+.chart-box .cap{font-size:12px;color:var(--ink-tert);margin-bottom:14px}
+.chart-box canvas{width:100%;height:190px;display:block;touch-action:none}
+#c_main{width:100%;height:250px;display:block;touch-action:none}
+.legend{display:flex;gap:18px;margin-top:14px;font-size:13px;color:var(--ink-subtle);flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px;vertical-align:middle}
+
+/* Tooltip */
+.tip{
+  position:fixed;z-index:99;pointer-events:none;opacity:0;transform:translateY(4px);
+  transition:opacity .12s ease;background:var(--surface-2);border:1px solid var(--hair-strong);
+  border-radius:var(--r-md);padding:10px 12px;font-size:13px;line-height:1.5;
+  box-shadow:0 8px 28px rgba(0,0,0,.55);min-width:140px;
+}
+.tip .t-m{font-weight:600;font-size:12px;margin-bottom:6px;color:var(--ink-subtle);text-transform:uppercase;letter-spacing:.4px}
+.tip .t-r{display:flex;justify-content:space-between;gap:16px;font-variant-numeric:tabular-nums;color:var(--ink-muted)}
+.tip .t-r i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:7px}
+.tip .t-r span:last-child{font-weight:600;color:var(--ink)}
+
+/* Tabela */
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;white-space:nowrap}
+thead th{position:sticky;top:0;background:var(--surface-1);text-align:right;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-tert);padding:11px 14px;border-bottom:1px solid var(--hair)}
+thead th:first-child,tbody td:first-child{text-align:center}
+thead th:last-child,tbody td:last-child{text-align:left}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--hair);text-align:right;color:var(--ink-muted)}
+tbody tr{transition:background .12s ease}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr.event td{color:var(--ink)}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 9px;border-radius:var(--r-pill);background:var(--surface-3);color:var(--ink-subtle)}
+.badge.f1{color:var(--primary-hover)}
+.evt{display:inline-block;font-size:11px;font-weight:500;color:var(--ink);background:var(--surface-3);border:1px solid var(--hair-strong);padding:2px 10px;border-radius:var(--r-pill)}
+.pos{color:var(--success)} .neg{color:#d4504e}
+.regime{font-size:11px;color:var(--ink-tert)}
+
+/* ——— MERCADO ————————————————————————————— */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px;position:relative}
+.stat::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
+.stat .big{font-size:36px;font-weight:600;line-height:1;letter-spacing:-1.4px;color:var(--ink)}
+.stat .cap{font-size:13px;color:var(--ink-subtle);margin-top:12px;line-height:1.4}
+.stat .src{font-size:11px;color:var(--ink-tert);margin-top:6px}
+.market-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.market-grid .span-2{grid-column:1 / -1}
+
+/* ——— Dashboard de cidade (cruza população × handoff) ——— */
+.city-card{margin-bottom:24px}
+.city-card .selectwrap{min-width:240px}
+.city-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
+.ckpi{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px}
+.ckpi .label{font-size:12px;color:var(--ink-subtle)}
+.ckpi .val{font-size:24px;font-weight:600;color:var(--ink);margin-top:6px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.ckpi.accent .val{color:var(--primary-hover)}
+.ckpi .sub{font-size:11px;color:var(--ink-tert);margin-top:3px}
+.city-break{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.brk{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--hair);border-radius:var(--r-sm);padding:11px 14px}
+.brk .n{font-size:13px;color:var(--ink-muted)}
+.brk .v{font-size:15px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.brk .v small{font-size:11px;color:var(--ink-subtle);font-weight:400}
+.city-note{font-size:12.5px;color:var(--ink-tert);margin-top:16px;line-height:1.5}
+.city-note b{color:var(--ink-subtle);font-weight:600}
+.tier-pill{display:inline-block;background:var(--primary);color:#fff;font-size:11px;font-weight:600;padding:2px 10px;border-radius:var(--r-pill);text-transform:uppercase;letter-spacing:.4px}
+
+/* Busca de cidade (autocomplete) */
+.city-search{position:relative;flex:1 1 460px;min-width:280px;max-width:620px}
+.city-search>input{width:100%;height:48px;border:1px solid var(--hair);border-radius:var(--r-md);background:var(--surface-1);padding:0 16px;color:var(--ink);font-size:15px;font-weight:500;text-overflow:ellipsis;transition:border-color .15s ease,box-shadow .15s ease}
+.city-search>input:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.22)}
+.city-search>input::placeholder{color:var(--ink-tert);font-weight:400}
+.city-drop{position:absolute;z-index:30;top:50px;left:0;right:0;max-height:320px;overflow-y:auto;
+  background:var(--surface-2);border:1px solid var(--hair-strong);border-radius:var(--r-md);
+  box-shadow:0 14px 36px rgba(0,0,0,.6);padding:5px;display:none}
+.city-drop.open{display:block}
+.city-opt{display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:var(--r-sm);cursor:pointer}
+.city-opt:hover,.city-opt.active{background:var(--surface-4)}
+.city-opt .nm{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px;color:var(--ink-muted)}
+.city-opt:hover .nm,.city-opt.active .nm{color:var(--ink)}
+.city-opt .uf{flex-shrink:0;font-size:11px;font-weight:600;color:var(--ink-subtle);background:var(--surface-1);border:1px solid var(--hair);padding:1px 8px;border-radius:var(--r-pill)}
+.city-opt.estado .uf{background:var(--primary);color:#fff;border-color:transparent}
+.city-opt .pop{flex-shrink:0;font-size:12px;color:var(--ink-tert);font-variant-numeric:tabular-nums;min-width:74px;text-align:right}
+.city-empty{padding:12px;color:var(--ink-tert);font-size:13px;text-align:center}
+.m-table th{text-align:left;padding:11px 12px;border-bottom:1px solid var(--hair);font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-tert);font-weight:600}
+.m-table td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--hair);white-space:normal;color:var(--ink-muted)}
+.m-table td b{color:var(--ink);font-weight:600}
+.m-table tr.hi td{color:var(--ink);font-weight:600}
+.m-table tr.hi td:first-child{color:var(--primary-hover)}
+.m-table tr:hover td{background:var(--surface-2)}
+.quote{border-left:2px solid var(--primary);padding:6px 0 6px 22px;font-size:24px;font-weight:500;color:var(--ink);line-height:1.35;letter-spacing:-.4px}
+.pill-tag{display:inline-block;background:var(--surface-3);border:1px solid var(--hair);color:var(--ink-muted);font-size:12px;font-weight:500;padding:4px 12px;border-radius:var(--r-pill);margin-bottom:14px}
+
+.disclaimer{background:var(--surface-1);border:1px solid var(--hair);color:var(--ink-subtle);border-radius:var(--r-lg);padding:18px 22px;font-size:13px;line-height:1.6;margin-top:24px}
+.disclaimer strong{color:var(--ink-muted);font-weight:600}
+.footer{margin-top:48px;padding-top:24px;border-top:1px solid var(--hair);font-size:12px;color:var(--ink-tert);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* ——— RESPONSIVO ——————————————————————————— */
+@media (max-width:1180px){ .sim-grid{grid-template-columns:300px minmax(0,1fr)} }
+@media (max-width:1024px){
+  .hero-kpis{grid-template-columns:repeat(2,1fr)}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:960px){
+  .sim-grid{grid-template-columns:1fr}
+  .controls{position:static}
+  .market-grid{grid-template-columns:1fr}
+}
+@media (max-width:768px){
+  .page-head h1{font-size:30px;letter-spacing:-.8px}
+  .page-head p{font-size:16px}
+  .charts{grid-template-columns:1fr}
+  .mini-kpis{grid-template-columns:repeat(2,1fr)}
+  .topnav{gap:10px;padding:0 16px}
+  .topnav .center{gap:0;flex:1;justify-content:flex-start}
+  .navlink{padding:7px 10px;font-size:14px}
+  .cta{display:none}
+  .card,.panel{padding:18px}
+  .city-card .selectwrap,.city-card .city-search{min-width:0;width:100%}
+  .card-head{align-items:flex-start}
+  #c_main{height:210px}
+  .chart-box canvas{height:170px}
+}
+@media (max-width:560px){
+  .hero-kpis{grid-template-columns:1fr 1fr}
+  .stat-row{grid-template-columns:1fr 1fr}
+  .mini-kpis{grid-template-columns:1fr}
+  .page-head h1{font-size:26px}
+  .kpi .val{font-size:26px}
+}
+</style>
+</head>
+<body class="intro-mode">
+
+<!-- ===================== TOP NAV ===================== -->
+<header class="topnav">
+  <img class="brand-logo" id="home" title="Voltar à tela inicial" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iQ2FtYWRhXzIiIGRhdGEtbmFtZT0iQ2FtYWRhIDIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHZpZXdCb3g9IjAgMCAzNS42MyA2LjQyIj4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiB1cmwoI0dyYWRpZW50ZV9zZW1fbm9tZV84Mik7CiAgICAgIH0KCiAgICAgIC5jbHMtMiB7CiAgICAgICAgZmlsbDogdXJsKCNHcmFkaWVudGVfc2VtX25vbWVfMTMwKTsKICAgICAgfQoKICAgICAgLmNscy0zIHsKICAgICAgICBmaWxsOiB1cmwoI0dyYWRpZW50ZV9zZW1fbm9tZV8xMDgpOwogICAgICB9CgogICAgICAuY2xzLTQgewogICAgICAgIGZpbGw6ICNmZmY7CiAgICAgIH0KICAgIDwvc3R5bGU+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9IkdyYWRpZW50ZV9zZW1fbm9tZV84MiIgZGF0YS1uYW1lPSJHcmFkaWVudGUgc2VtIG5vbWUgODIiIHgxPSIuNzEiIHkxPSI1LjA1IiB4Mj0iMi42NSIgeTI9IjEuMDEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjI2IiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjQ1IiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjU1IiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iLjY2IiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI2MyYzJjMiIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iR3JhZGllbnRlX3NlbV9ub21lXzEwOCIgZGF0YS1uYW1lPSJHcmFkaWVudGUgc2VtIG5vbWUgMTA4IiB4MT0iMS43NSIgeTE9IjQuNzciIHgyPSI1LjU5IiB5Mj0iNC43NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNjMmMyYzIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIuMzgiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIuNjkiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjZmZmIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJHcmFkaWVudGVfc2VtX25vbWVfMTMwIiBkYXRhLW5hbWU9IkdyYWRpZW50ZSBzZW0gbm9tZSAxMzAiIHgxPSI0LjgxIiB5MT0iNS41NiIgeDI9IjcuMDgiIHkyPSIxLjUzIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iI2MyYzJjMiIvPgogICAgICA8c3RvcCBvZmZzZXQ9Ii4zMSIgc3RvcC1jb2xvcj0iI2ZmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9Ii42MSIgc3RvcC1jb2xvcj0iI2ZmZiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNmZmYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIDxnIGlkPSJDYW1hZGFfMS0yIiBkYXRhLW5hbWU9IkNhbWFkYSAxIj4KICAgIDxnPgogICAgICA8Zz4KICAgICAgICA8Zz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTExLjE4LDIuMjJjLS4wOS0uMjUtLjI1LS40NS0uNDctLjU5LS4yMi0uMTUtLjQ4LS4yMi0uNzctLjIyLS4yNiwwLS41LjA2LS43MS4xOC0uMjEuMTItLjM4LjMtLjUuNTItLjEyLjIzLS4xOC40OS0uMTguNzlzLjA2LjU2LjE4Ljc5Yy4xMi4yMy4yOS40LjUuNTIuMjEuMTIuNDUuMTguNzEuMThzLjQ4LS4wNi42OC0uMTdjLjItLjExLjM3LS4yNy40OS0uNDguMTItLjIxLjE5LS40NS4yLS43M2gtMS40N3YtLjE4aDEuNjl2LjE0YzAsLjMxLS4wOC41OC0uMjIuODMtLjE0LjI0LS4zMy40NC0uNTYuNTctLjI0LjE0LS41MS4yMS0uOC4yMXMtLjU4LS4wNy0uODItLjIxYy0uMjQtLjE0LS40NC0uMzQtLjU3LS42LS4xNC0uMjYtLjIxLS41NC0uMjEtLjg3cy4wNy0uNjIuMjEtLjg3Yy4xNC0uMjYuMzMtLjQ1LjU3LS42LjI0LS4xNC41Mi0uMjEuODItLjIxLjM1LDAsLjY2LjA5LjkyLjI3LjI2LjE4LjQ1LjQyLjU3Ljc0aC0uMjRaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0xMi40NywyLjA5Yy4xNi0uMS4zNi0uMTUuNjEtLjE1di4yMmgtLjA3Yy0uMjUsMC0uNDYuMDctLjYzLjIxLS4xNy4xNC0uMjUuMzgtLjI1Ljd2MS40N2gtLjIxVjEuOTloLjIxdi41M2MuMDYtLjE5LjE3LS4zMy4zMy0uNDNaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0xNS40OSwxLjk5djIuNTZoLS4yMXYtLjU2Yy0uMDcuMTktLjE5LjM0LS4zNi40NC0uMTcuMS0uMzYuMTUtLjU4LjE1LS4zLDAtLjU1LS4wOS0uNzUtLjI4LS4xOS0uMTktLjI5LS40Ni0uMjktLjgzdi0xLjQ5aC4yMXYxLjQ3YzAsLjMuMDguNTQuMjMuNy4xNS4xNi4zNi4yNC42My4yNHMuNS0uMDkuNjYtLjI2Yy4xNi0uMTguMjUtLjQ0LjI1LS43OHYtMS4zN2guMjFaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0xNi42MiwyLjE2Yy4xOS0uMTMuNDItLjIuNjktLjIuMjQsMCwuNDUuMDUuNjQuMTYuMTkuMTEuMzMuMjYuNDQuNDYuMTEuMi4xNi40My4xNi42OXMtLjA1LjQ5LS4xNi42OWMtLjExLjItLjI1LjM1LS40NC40Ni0uMTkuMTEtLjQuMTYtLjY0LjE2LS4yNywwLS40OS0uMDctLjY4LS4yLS4xOS0uMTMtLjMyLS4zLS40LS41MXYxLjg3aC0uMjFWMS45OWguMjF2LjY3Yy4wNy0uMjEuMi0uMzguMzktLjUxWk0xOC4xOSwyLjY3Yy0uMDktLjE3LS4yMS0uMy0uMzctLjM5LS4xNi0uMDktLjM0LS4xMy0uNTUtLjEzcy0uMzguMDUtLjU0LjE0Yy0uMTYuMDktLjI5LjIyLS4zOC40LS4wOS4xNy0uMTQuMzctLjE0LjU5cy4wNS40Mi4xNC42Yy4wOS4xNy4yMi4zLjM4LjQuMTYuMDkuMzQuMTQuNTQuMTRzLjM5LS4wNS41NS0uMTRjLjE2LS4wOS4yOC0uMjIuMzctLjM5LjA5LS4xNy4xMy0uMzcuMTMtLjZzLS4wNC0uNDMtLjEzLS42WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMTkuNDIsNC40M2MtLjE5LS4xMS0uMzQtLjI2LS40NS0uNDYtLjExLS4yLS4xNi0uNDMtLjE2LS43cy4wNS0uNDkuMTYtLjY5Yy4xMS0uMi4yNi0uMzUuNDUtLjQ2LjE5LS4xMS40MS0uMTYuNjUtLjE2cy40NS4wNS42NC4xNmMuMTkuMTEuMzQuMjYuNDUuNDUuMTEuMi4xNi40My4xNi43cy0uMDUuNS0uMTYuN2MtLjExLjItLjI2LjM1LS40NS40Ni0uMTkuMTEtLjQxLjE2LS42NS4xNnMtLjQ1LS4wNS0uNjQtLjE2Wk0yMC41OCw0LjI3Yy4xNi0uMDguMjktLjIxLjM5LS4zOC4xLS4xNy4xNS0uMzguMTUtLjYzcy0uMDUtLjQ1LS4xNS0uNjJjLS4xLS4xNy0uMjMtLjMtLjM5LS4zOC0uMTYtLjA4LS4zMy0uMTItLjUyLS4xMnMtLjM2LjA0LS41Mi4xMmMtLjE2LjA4LS4yOS4yMS0uMzguMzgtLjEuMTctLjE1LjM4LS4xNS42MnMuMDUuNDYuMTQuNjNjLjEuMTcuMjIuMy4zOC4zOC4xNi4wOC4zMy4xMi41Mi4xMnMuMzYtLjA0LjUyLS4xMloiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTIzLjcsMy45NGgtMS4zNGwtLjIyLjY0aC0uNzFsMS4yMS0zLjM3aC43OWwxLjIxLDMuMzdoLS43MWwtLjIyLS42NFpNMjMuNSwzLjRsLS40OC0xLjM3LS40OCwxLjM3aC45NVoiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTI1Ljg4LDMuOTZsLjY2LTJoLjdsLS45NiwyLjYxaC0uOGwtLjk2LTIuNjFoLjcxbC42NiwyWiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjkuNzcsMy40NGgtMS45MWMuMDIuMTkuMDguMzQuMi40NC4xMi4xMS4yNi4xNi40My4xNi4yNCwwLC40Mi0uMTEuNTItLjMyaC43MWMtLjA4LjI1LS4yMi40Ni0uNDMuNjItLjIxLjE2LS40OC4yNC0uNzkuMjQtLjI1LDAtLjQ4LS4wNi0uNjgtLjE3LS4yLS4xMS0uMzUtLjI3LS40Ny0uNDctLjExLS4yLS4xNy0uNDQtLjE3LS43MXMuMDUtLjUxLjE2LS43MWMuMTEtLjIuMjYtLjM2LjQ2LS40Ny4yLS4xMS40My0uMTYuNjgtLjE2cy40Ny4wNS42Ny4xNmMuMi4xMS4zNS4yNi40Ni40NS4xMS4yLjE2LjQyLjE2LjY4LDAsLjA5LDAsLjE4LS4wMi4yNVpNMjkuMSwzYzAtLjE3LS4wNi0uMzEtLjE4LS40MS0uMTItLjEtLjI3LS4xNS0uNDQtLjE1LS4xNiwwLS4zLjA1LS40MS4xNS0uMTEuMS0uMTguMjQtLjIuNDFoMS4yNFoiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTMyLjIyLDIuMjJjLjE5LjIuMjkuNDcuMjkuODJ2MS41M2gtLjY2di0xLjQ0YzAtLjIxLS4wNS0uMzctLjE2LS40OC0uMS0uMTEtLjI0LS4xNy0uNDItLjE3cy0uMzMuMDYtLjQzLjE3Yy0uMTEuMTEtLjE2LjI3LS4xNi40OHYxLjQ0aC0uNjZWMS45N2guNjZ2LjMyYy4wOS0uMTEuMi0uMi4zNC0uMjcuMTQtLjA2LjI5LS4xLjQ1LS4xLjMxLDAsLjU2LjEuNzUuMjlaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0zMi44OCwyLjUzYy4xMS0uMi4yNS0uMzYuNDMtLjQ3LjE4LS4xMS4zOC0uMTYuNjEtLjE2LjE3LDAsLjMzLjA0LjQ4LjExLjE1LjA3LjI4LjE3LjM3LjI5di0xLjI0aC42N3YzLjQ4aC0uNjd2LS4zOWMtLjA4LjEzLS4yLjIzLS4zNC4zMS0uMTUuMDgtLjMyLjEyLS41MS4xMi0uMjIsMC0uNDItLjA2LS42LS4xNy0uMTgtLjExLS4zMy0uMjctLjQzLS40OC0uMTEtLjIxLS4xNi0uNDQtLjE2LS43MXMuMDUtLjUuMTYtLjdaTTM0LjY4LDIuODNjLS4wNi0uMTEtLjE1LS4yLS4yNS0uMjYtLjExLS4wNi0uMjItLjA5LS4zNC0uMDlzLS4yNC4wMy0uMzQuMDljLS4xLjA2LS4xOS4xNS0uMjUuMjYtLjA2LjExLS4xLjI1LS4xLjQxcy4wMy4yOS4xLjQxYy4wNi4xMi4xNS4yMS4yNS4yNy4xMS4wNi4yMi4wOS4zNC4wOXMuMjQtLjAzLjM0LS4wOWMuMTEtLjA2LjE5LS4xNS4yNS0uMjYuMDYtLjExLjA5LS4yNS4wOS0uNDFzLS4wMy0uMy0uMDktLjQxWiIvPgogICAgICAgIDwvZz4KICAgICAgICA8Zz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTE3LjMsNS43NmwtLjI5LS42NWguMDlsLjI1LjU3LjI1LS41N2guMDlsLS4yOS42NWgtLjA5WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMTcuNzcsNS43NnYtLjY1aC41M3YuMDdoLS40NXYuMjJoLjR2LjA3aC0uNHYuMjJoLjQ1di4wN2gtLjUzWiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMTguNDMsNS43NnYtLjY1aC4wOWwuNDQuNTV2LS41NWguMDh2LjY1aC0uMDlsLS40NC0uNTV2LjU1aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0xOS4yMyw1Ljc2di0uNjVoLjNzLjA4LDAsLjEyLjAyYy4wNC4wMS4wNy4wNC4xMS4wNnMuMDYuMDYuMDcuMWMuMDIuMDQuMDMuMDkuMDMuMTRzMCwuMS0uMDMuMTRjLS4wMi4wNC0uMDQuMDctLjA3LjFzLS4wNy4wNS0uMTEuMDZjLS4wNC4wMS0uMDguMDItLjEyLjAyaC0uM1pNMTkuMzEsNS42OWguMjJjLjA1LDAsLjEtLjAxLjEzLS4wNC4wNC0uMDIuMDctLjA2LjA5LS4wOS4wMi0uMDQuMDMtLjA4LjAzLS4xM3MtLjAxLS4wOS0uMDMtLjEzYy0uMDItLjA0LS4wNS0uMDctLjA5LS4wOS0uMDQtLjAyLS4wOC0uMDQtLjEzLS4wNGgtLjIydi41MVoiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTE5Ljk5LDUuNzZ2LS42NWguMDh2LjY1aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0yMC4yNSw1Ljc2di0uNjVoLjA5bC40NC41NXYtLjU1aC4wOHYuNjVoLS4wOWwtLjQ0LS41NXYuNTVoLS4wOFoiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTIxLjM1LDUuNzdjLS4wNywwLS4xNC0uMDEtLjE5LS4wNS0uMDUtLjAzLS4wOS0uMDctLjEyLS4xMi0uMDMtLjA1LS4wNC0uMTEtLjA0LS4xN3MuMDEtLjEyLjA0LS4xN2MuMDMtLjA1LjA3LS4wOS4xMi0uMTIuMDUtLjAzLjEyLS4wNS4xOS0uMDUuMDgsMCwuMTQuMDIuMi4wNS4wNi4wMy4xLjA4LjEzLjEzaC0uMDlzLS4wNS0uMDYtLjA5LS4wOC0uMDktLjAzLS4xNC0uMDNjLS4wNiwwLS4xMS4wMS0uMTUuMDQtLjA0LjAyLS4wNy4wNS0uMS4wOXMtLjAzLjA4LS4wMy4xMy4wMS4wOS4wMy4xMy4wNS4wNy4xLjA5Yy4wNC4wMi4wOS4wNC4xNS4wNC4wNCwwLC4wOCwwLC4xMi0uMDMuMDQtLjAyLjA3LS4wNC4wOS0uMDcuMDItLjAzLjA0LS4wNy4wNC0uMTJoLS4yNnYtLjA3aC4zNHYuMzVoLS4wN3YtLjEycy0uMDMuMDQtLjA2LjA2Yy0uMDIuMDItLjA1LjAzLS4wOS4wNS0uMDMuMDEtLjA3LjAyLS4xMi4wMloiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTIyLjA2LDUuNzZ2LS42NWguMDlsLjI2LjMxLjI1LS4zMWguMDl2LjY1aC0uMDh2LS41NGwtLjI3LjMxLS4yNy0uMzF2LjU0aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0yMi44NSw1Ljc2bC4zMS0uNjVoLjFsLjMxLjY1aC0uMDlsLS4wOS0uMTloLS4zNmwtLjA5LjE5aC0uMDlaTTIzLjA2LDUuNWguMjlsLS4xNS0uMzItLjE1LjMyWiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjMuOTUsNS43N2MtLjA3LDAtLjEzLS4wMS0uMTktLjA1LS4wNS0uMDMtLjA5LS4wNy0uMTItLjEyLS4wMy0uMDUtLjA0LS4xMS0uMDQtLjE3cy4wMS0uMTIuMDQtLjE3Yy4wMy0uMDUuMDctLjA5LjEyLS4xMi4wNS0uMDMuMTEtLjA1LjE5LS4wNS4wNSwwLC4xLDAsLjE1LjAzcy4wOC4wNC4xMS4wN2MuMDMuMDMuMDUuMDcuMDcuMTFoLS4wOXMtLjA1LS4wNy0uMDktLjEtLjA5LS4wNC0uMTUtLjA0LS4xMS4wMS0uMTUuMDRjLS4wNC4wMi0uMDcuMDUtLjA5LjA5LS4wMi4wNC0uMDMuMDgtLjAzLjEzcy4wMS4wOS4wMy4xM2MuMDIuMDQuMDUuMDcuMDkuMDkuMDQuMDIuMDkuMDQuMTUuMDRzLjExLS4wMS4xNS0uMDRjLjA0LS4wMi4wNy0uMDYuMDktLjFoLjA5cy0uMDQuMDctLjA3LjExYy0uMDMuMDMtLjA3LjA1LS4xMS4wNy0uMDQuMDItLjA5LjAzLS4xNS4wM1oiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTI0LjM5LDUuNzZ2LS42NWguMDh2LjI5aC40MnYtLjI5aC4wOHYuNjVoLS4wOHYtLjI5aC0uNDJ2LjI5aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0yNS4xNSw1Ljc2di0uNjVoLjA4di42NWgtLjA4WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjUuNDEsNS43NnYtLjY1aC4wOWwuNDQuNTV2LS41NWguMDh2LjY1aC0uMDlsLS40NC0uNTV2LjU1aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0yNi4yMSw1Ljc2di0uNjVoLjUzdi4wN2gtLjQ1di4yMmguNHYuMDdoLS40di4yMmguNDV2LjA3aC0uNTNaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0yNy4xMiw1Ljc3Yy0uMDcsMC0uMTMsMC0uMTctLjAzLS4wNC0uMDItLjA4LS4wNC0uMS0uMDctLjAyLS4wMy0uMDMtLjA3LS4wNC0uMWguMDhzLjAxLjA2LjAzLjA4LjA1LjAzLjA4LjA0LjA3LjAxLjExLjAxYy4wNiwwLC4xMSwwLC4xNC0uMDMuMDQtLjAyLjA1LS4wNS4wNS0uMDksMC0uMDIsMC0uMDQtLjAzLS4wNnMtLjA0LS4wMy0uMDctLjA0LS4wNi0uMDItLjEtLjAzYy0uMDMsMC0uMDctLjAyLS4xLS4wMi0uMDQsMC0uMDctLjAyLS4xLS4wMy0uMDMtLjAxLS4wNS0uMDMtLjA3LS4wNS0uMDItLjAyLS4wMy0uMDUtLjAzLS4wOCwwLS4wNS4wMi0uMS4wNy0uMTMuMDUtLjAzLjExLS4wNS4yLS4wNS4wNiwwLC4xMiwwLC4xNi4wM3MuMDcuMDQuMDkuMDdjLjAyLjAzLjAzLjA2LjAzLjA5aC0uMDhzLS4wMi0uMDYtLjA1LS4wOGMtLjAzLS4wMi0uMDgtLjAzLS4xNS0uMDMtLjA0LDAtLjA3LDAtLjEuMDEtLjAzLDAtLjA0LjAyLS4wNi4wMy0uMDEuMDEtLjAyLjAyLS4wMy4wNHMwLC4wMiwwLC4wNGMwLC4wMiwwLC4wNC4wMy4wNS4wMi4wMS4wNC4wMi4wNy4wMy4wMywwLC4wNi4wMi4xLjAyLjA0LDAsLjA3LjAyLjExLjAyLjA0LDAsLjA3LjAyLjEuMDMuMDMuMDEuMDUuMDMuMDcuMDUuMDIuMDIuMDMuMDUuMDMuMDgsMCwuMDYtLjAzLjExLS4wOC4xNC0uMDUuMDMtLjEyLjA1LS4yMS4wNVoiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTI3Ljk3LDUuNzdzLS4wOSwwLS4xMi0uMDJjLS4wNC0uMDItLjA3LS4wNC0uMDktLjA3LS4wMi0uMDMtLjAzLS4wNi0uMDMtLjEsMC0uMDMuMDEtLjA3LjAzLS4wOS4wMi0uMDMuMDYtLjA1LjEtLjA2LS4wMiwwLS4wMy0uMDEtLjA1LS4wMy0uMDItLjAxLS4wMy0uMDMtLjA0LS4wNS0uMDEtLjAyLS4wMi0uMDQtLjAyLS4wNiwwLS4wNS4wMi0uMDkuMDYtLjEzLjA0LS4wMy4xLS4wNS4xOC0uMDUuMDUsMCwuMDksMCwuMTIuMDIuMDMuMDEuMDYuMDMuMDcuMDVzLjAzLjA0LjAzLjA2aC0uMDlzLS4wMi0uMDMtLjA0LS4wNWMtLjAyLS4wMi0uMDYtLjAyLS4xLS4wMi0uMDUsMC0uMDkuMDEtLjEyLjAzLS4wMi4wMi0uMDQuMDUtLjA0LjA4LDAsLjA0LjAxLjA2LjA0LjA4LjAzLjAyLjA2LjAzLjEuMDNoLjE3di0uMDRoLjA4di4wNGguMDd2LjA3aC0uMDd2LjEzYzAsLjA2LS4wMi4xLS4wNy4xNC0uMDQuMDQtLjEuMDUtLjE4LjA1Wk0yNy45Nyw1LjdjLjA2LDAsLjEtLjAxLjEzLS4wNC4wMy0uMDIuMDQtLjA1LjA0LS4wOHYtLjEzaC0uMThzLS4wNiwwLS4wOC4wMmMtLjAyLjAxLS4wNC4wMy0uMDUuMDRzLS4wMi4wNC0uMDIuMDYsMCwuMDQuMDIuMDZjLjAxLjAyLjAzLjA0LjA2LjA1LjAzLjAxLjA2LjAyLjA5LjAyWiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjguNjMsNS43NnYtLjY1aC41MnYuMDdoLS40NHYuMjNoLjM5di4wN2gtLjM5di4yOGgtLjA4WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMjkuMjYsNS43NnYtLjY1aC4zNGMuMDcsMCwuMTMuMDIuMTguMDZzLjA3LjA5LjA3LjE1YzAsLjA0LDAsLjA4LS4wMy4xLS4wMi4wMy0uMDQuMDQtLjA3LjA2cy0uMDUuMDItLjA4LjAzbC4xOS4yNmgtLjFsLS4xNy0uMjVoLS4yNXYuMjVoLS4wOFpNMjkuMzQsNS40NGguMjVzLjA1LDAsLjA4LS4wMWMuMDMsMCwuMDUtLjAyLjA3LS4wNC4wMi0uMDIuMDMtLjA1LjAzLS4wOCwwLS4wNC0uMDItLjA3LS4wNS0uMS0uMDMtLjAyLS4wNy0uMDQtLjEyLS4wNGgtLjI1di4yNloiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTI5LjksNS43NmwuMzEtLjY1aC4xbC4zMS42NWgtLjA5bC0uMDktLjE5aC0uMzZsLS4wOS4xOWgtLjA5Wk0zMC4xMSw1LjVoLjI5bC0uMTUtLjMyLS4xNS4zMloiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTMwLjcxLDUuNzZ2LS42NWguMDlsLjQ0LjU1di0uNTVoLjA4di42NWgtLjA5bC0uNDQtLjU1di41NWgtLjA4WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMzEuODEsNS43N2MtLjA3LDAtLjEzLS4wMS0uMTktLjA1LS4wNS0uMDMtLjA5LS4wNy0uMTItLjEyLS4wMy0uMDUtLjA0LS4xMS0uMDQtLjE3cy4wMS0uMTIuMDQtLjE3Yy4wMy0uMDUuMDctLjA5LjEyLS4xMi4wNS0uMDMuMTEtLjA1LjE5LS4wNS4wNSwwLC4xLDAsLjE1LjAzcy4wOC4wNC4xMS4wN2MuMDMuMDMuMDUuMDcuMDcuMTFoLS4wOXMtLjA1LS4wNy0uMDktLjEtLjA5LS4wNC0uMTUtLjA0LS4xMS4wMS0uMTUuMDRjLS4wNC4wMi0uMDcuMDUtLjA5LjA5LS4wMi4wNC0uMDMuMDgtLjAzLjEzcy4wMS4wOS4wMy4xM2MuMDIuMDQuMDUuMDcuMDkuMDkuMDQuMDIuMDkuMDQuMTUuMDRzLjExLS4wMS4xNS0uMDRjLjA0LS4wMi4wNy0uMDYuMDktLjFoLjA5cy0uMDQuMDctLjA3LjExYy0uMDMuMDMtLjA3LjA1LS4xMS4wNy0uMDQuMDItLjA5LjAzLS4xNS4wM1oiLz4KICAgICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTMyLjI1LDUuNzZ2LS42NWguMDh2LjI5aC40MnYtLjI5aC4wOHYuNjVoLS4wOHYtLjI5aC0uNDJ2LjI5aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0zMy4wMSw1Ljc2di0uNjVoLjA4di42NWgtLjA4WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMzMuNTMsNS43N2MtLjA3LDAtLjEzLDAtLjE3LS4wMy0uMDQtLjAyLS4wOC0uMDQtLjEtLjA3LS4wMi0uMDMtLjAzLS4wNy0uMDQtLjFoLjA4cy4wMS4wNi4wMy4wOC4wNS4wMy4wOC4wNC4wNy4wMS4xMS4wMWMuMDYsMCwuMTEsMCwuMTQtLjAzLjA0LS4wMi4wNS0uMDUuMDUtLjA5LDAtLjAyLDAtLjA0LS4wMy0uMDZzLS4wNC0uMDMtLjA3LS4wNC0uMDYtLjAyLS4xLS4wM2MtLjAzLDAtLjA3LS4wMi0uMS0uMDItLjA0LDAtLjA3LS4wMi0uMS0uMDMtLjAzLS4wMS0uMDUtLjAzLS4wNy0uMDUtLjAyLS4wMi0uMDMtLjA1LS4wMy0uMDgsMC0uMDUuMDItLjEuMDctLjEzLjA1LS4wMy4xMS0uMDUuMi0uMDUuMDYsMCwuMTIsMCwuMTYuMDNzLjA3LjA0LjA5LjA3Yy4wMi4wMy4wMy4wNi4wMy4wOWgtLjA4cy0uMDItLjA2LS4wNS0uMDhjLS4wMy0uMDItLjA4LS4wMy0uMTUtLjAzLS4wNCwwLS4wNywwLS4xLjAxLS4wMywwLS4wNC4wMi0uMDYuMDMtLjAxLjAxLS4wMi4wMi0uMDMuMDRzMCwuMDIsMCwuMDRjMCwuMDIsMCwuMDQuMDMuMDUuMDIuMDEuMDQuMDIuMDcuMDMuMDMsMCwuMDYuMDIuMS4wMi4wNCwwLC4wNy4wMi4xMS4wMi4wNCwwLC4wNy4wMi4xLjAzLjAzLjAxLjA1LjAzLjA3LjA1LjAyLjAyLjAzLjA1LjAzLjA4LDAsLjA2LS4wMy4xMS0uMDguMTQtLjA1LjAzLS4xMi4wNS0uMjEuMDVaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0zMy45NCw1Ljc2di0uNjVoLjA4di42NWgtLjA4WiIvPgogICAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNMzQuMTksNS43NnYtLjY1aC4wOWwuNDQuNTV2LS41NWguMDh2LjY1aC0uMDlsLS40NC0uNTV2LjU1aC0uMDhaIi8+CiAgICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTQiIGQ9Ik0zNS4zLDUuNzdjLS4wNywwLS4xNC0uMDEtLjE5LS4wNS0uMDUtLjAzLS4wOS0uMDctLjEyLS4xMi0uMDMtLjA1LS4wNC0uMTEtLjA0LS4xN3MuMDEtLjEyLjA0LS4xN2MuMDMtLjA1LjA3LS4wOS4xMi0uMTIuMDUtLjAzLjEyLS4wNS4xOS0uMDUuMDgsMCwuMTQuMDIuMi4wNS4wNi4wMy4xLjA4LjEzLjEzaC0uMDlzLS4wNS0uMDYtLjA5LS4wOC0uMDktLjAzLS4xNC0uMDNjLS4wNiwwLS4xMS4wMS0uMTUuMDQtLjA0LjAyLS4wNy4wNS0uMS4wOXMtLjAzLjA4LS4wMy4xMy4wMS4wOS4wMy4xMy4wNS4wNy4xLjA5Yy4wNC4wMi4wOS4wNC4xNS4wNC4wNCwwLC4wOCwwLC4xMi0uMDMuMDQtLjAyLjA3LS4wNC4wOS0uMDcuMDItLjAzLjA0LS4wNy4wNC0uMTJoLS4yNnYtLjA3aC4zNHYuMzVoLS4wN3YtLjEycy0uMDMuMDQtLjA2LjA2Yy0uMDIuMDItLjA1LjAzLS4wOS4wNS0uMDMuMDEtLjA3LjAyLS4xMi4wMloiLz4KICAgICAgICA8L2c+CiAgICAgIDwvZz4KICAgICAgPGc+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMy4xNywxLjE4bC0xLjc5LDMuNTVjLS4wNi4xMS0uMTQuMjMtLjIzLjMzLDAsMCwwLC4wMS0uMDEuMDItLjA0LjA0LS4wOS4wOC0uMTcuMTItLjEuMDUtLjE5LjA3LS4yNS4wN2gtLjcxTDIuMTcsMS4wOGMuMDQtLjA1LjEyLS4xNC4yNi0uMjEuMTQtLjA3LjI2LS4wNy4zMi0uMDcuMDUsMCwuMTUuMDQuMjUuMTIuMTEuMS4xNS4yMi4xNi4yNmgwWiIvPgogICAgICAgIDxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTIuMTgsMy4xNGwtLjQyLjg0aC42MXMuMDguMDEuMTMuMDVjLjA3LjA0LjEuMTEuMTEuMTMuMzMuNi42NywxLjIsMSwxLjguMDQuMDcuMTIuMi4yOC4zLjE3LjExLjM0LjE0LjQyLjE0LjA4LjAxLjI3LjAzLjQ5LS4wNS4yMS0uMDguMzMtLjIyLjM3LS4yOS4xNC0uMjUuMjktLjUuNDMtLjc0LS4wNC4wNy0uMTYuMjItLjM2LjMzLS4xOS4xLS4zNy4xLS40NS4xLS4wNi0uMDEtLjE2LS4wNC0uMjYtLjEyLS4xMy0uMS0uMTktLjIxLS4yMS0uMjctLjM2LS42My0uNzEtMS4yNy0xLjA3LTEuOS0uMDItLjA1LS4wNy0uMTMtLjE2LS4xOS0uMDctLjA1LS4xNC0uMDgtLjE5LS4wOS0uMDctLjAxLS4xNC0uMDItLjIyLS4wMi0uMTgtLjAxLS4zNC0uMDEtLjQ5LDBoMFoiLz4KICAgICAgICA8cGF0aCBjbGFzcz0iY2xzLTIiIGQ9Ik01LjU5LDUuMzNMNy44OCwxLjA5aC0uOTJjLS4wNSwwLS4xNi4wMy0uMjcuMS0uMDkuMDYtLjE0LjEzLS4xNi4xOC0uNzIsMS4zNy0xLjQzLDIuNzQtMi4xNSw0LjExLjAzLjA1LjEuMTQuMjIuMjEuMDkuMDUuMTguMDcuMjMuMDcuMDgsMCwuMjYtLjAxLjQ1LS4xMi4xOC0uMS4yOS0uMjQuMzMtLjMxaDBaIi8+CiAgICAgICAgPHBhdGggY2xhc3M9ImNscy00IiBkPSJNNC4yMywzLjQybC0xLjE2LTIuMzRzLS4xNC0uMi0uMzUtLjIzYy0uMjItLjA0LS40NS4wNy0uNTguMjguMS0uMjIuMi0uNDQuMjktLjY3LjAyLS4wNS4xNS0uMzIuNDctLjQyLjI1LS4wOC40NywwLC41My4wMi4wNS4wMi4xMS4wNS4xNy4xLjEuMDguMTYuMTguMTkuMjMuMjUuNTEuNSwxLjAyLjc0LDEuNTMuMDMuMDcuMDUuMTYuMDcuMjcuMDMuMjIsMCwuNDEtLjAzLjUzLS4wMy4wNy0uMDUuMTQtLjA5LjIyLS4wOC4xOC0uMTcuMzUtLjI2LjQ5aDBaIi8+CiAgICAgIDwvZz4KICAgIDwvZz4KICA8L2c+Cjwvc3ZnPg==" alt="Avend" />
+  <nav class="center" role="tablist" aria-label="Navegação">
+    <button class="navlink active" data-page="simulador" role="tab" aria-selected="true">Simulador</button>
+    <button class="navlink" data-page="mercado" role="tab" aria-selected="false">Mercado</button>
+  </nav>
+  <button class="cta">ABF Expo 2026</button>
+</header>
+
+<main>
+<!-- ===================== PÁGINA 0 · INTRODUÇÃO ===================== -->
+<section class="page active" id="page-intro">
+  <div class="intro">
+    <div class="led-lines" aria-hidden="true"><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span></div>
+    <div class="intro-inner">
+      <img class="intro-logo" id="intro-logo" alt="Grupo Avend" />
+      <div class="eyebrow">Grupo Avend · Vending Machines</div>
+      <h1>Simulador de Franquia</h1>
+      <p class="lead">Descubra, em minutos, o potencial de uma franquia Avend: projeção financeira mês a mês e análise de mercado por cidade. Conduza o atendimento direto da tela.</p>
+      <button class="start-btn" id="start-btn">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 3l14 9-14 9V3z" fill="currentColor"/></svg>
+        Iniciar atendimento
+      </button>
+      <div class="intro-feats">
+        <div class="intro-feat">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+          <h4>Simulador Financeiro</h4>
+          <p>Payback, lucro, frota e patrimônio com reinvestimento composto.</p>
+        </div>
+        <div class="intro-feat">
+          <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8z"/></svg></div>
+          <h4>Dados de Mercado</h4>
+          <p>Potencial por cidade cruzando população com os dados do setor.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PÁGINA 1 · SIMULADOR ===================== -->
+<section class="page" id="page-simulador">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow">Simulador financeiro</div>
+      <h1>Quanto sua franquia pode crescer</h1>
+      <p>Ajuste os parâmetros e acompanhe a projeção mês a mês — frota, lucro, payback e patrimônio, com reinvestimento composto calculado em tempo real.</p>
+    </div>
+
+    <div class="sim-grid">
+      <!-- Controles -->
+      <aside class="panel controls">
+        <h3>Cenário</h3>
+        <div class="presets">
+          <button class="chip" data-preset="conservador">Conservador</button>
+          <button class="chip active" data-preset="base">Base</button>
+          <button class="chip" data-preset="otimista">Otimista</button>
+          <button class="chip" data-preset="turbo">Turbo</button>
+        </div>
+
+        <h3>Parâmetros <span style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink-tert)">· arraste ou digite</span></h3>
+        <div class="field">
+          <div class="row"><label for="f_fat">Faturamento médio / máquina</label>
+            <span class="numwrap"><span class="pfx">R$</span><input class="numin" id="n_fat" type="number" min="5000" max="30000" step="500" value="10000" aria-label="Faturamento por máquina"></span></div>
+          <input type="range" id="f_fat" min="5000" max="30000" step="500" value="10000">
+        </div>
+        <div class="field">
+          <div class="row"><label for="f_r1">Reinvestimento · Fase 1</label>
+            <span class="numwrap"><input class="numin" id="n_r1" type="number" min="50" max="100" step="5" value="100" aria-label="Reinvestimento fase 1"><span class="pfx">%</span></span></div>
+          <input type="range" id="f_r1" min="50" max="100" step="5" value="100">
+        </div>
+        <div class="field">
+          <div class="row"><label for="f_d1">Duração da Fase 1</label>
+            <span class="numwrap"><input class="numin" id="n_d1" type="number" min="1" max="10" step="1" value="3" aria-label="Duração fase 1 em anos"><span class="pfx">anos</span></span></div>
+          <input type="range" id="f_d1" min="12" max="120" step="12" value="36">
+        </div>
+        <div class="field">
+          <div class="row"><label for="f_r2">Reinvestimento · Fase 2</label>
+            <span class="numwrap"><input class="numin" id="n_r2" type="number" min="0" max="100" step="5" value="50" aria-label="Reinvestimento fase 2"><span class="pfx">%</span></span></div>
+          <input type="range" id="f_r2" min="0" max="100" step="5" value="50">
+        </div>
+        <div class="field">
+          <div class="row"><label for="f_res">Reserva de capital / máquina</label>
+            <span class="numwrap"><span class="pfx">R$</span><input class="numin" id="n_res" type="number" min="2000" max="10000" step="500" value="5000" aria-label="Reserva de capital"></span></div>
+          <input type="range" id="f_res" min="2000" max="10000" step="500" value="5000">
+        </div>
+
+        <h3>Ritmo de expansão</h3>
+        <div class="selectwrap">
+          <label for="f_cap">Capacidade de implantação</label>
+          <select id="f_cap">
+            <option value="1">1 máquina / mês</option>
+            <option value="2" selected>2 máquinas / mês</option>
+            <option value="3">3 máquinas / mês</option>
+            <option value="4">4 máquinas / mês</option>
+            <option value="5">5 máquinas / mês</option>
+          </select>
+        </div>
+        <div class="selectwrap">
+          <label for="f_hor">Horizonte da projeção</label>
+          <select id="f_hor">
+            <option value="36">3 anos</option>
+            <option value="48">4 anos</option>
+            <option value="60" selected>5 anos</option>
+            <option value="84">7 anos</option>
+            <option value="120">10 anos</option>
+          </select>
+        </div>
+      </aside>
+
+      <!-- Resultados -->
+      <div class="results">
+        <div class="hero-kpis">
+          <div class="kpi feature"><div class="label">Payback · 1ª máquina</div><div class="val" id="k_payback">—</div><div class="sub">Média da rede · cenário base</div></div>
+          <div class="kpi"><div class="label">Margem líquida</div><div class="val" id="k_margem">—</div><div class="sub" id="k_margem_sub">Operação madura</div></div>
+          <div class="kpi"><div class="label">Máquinas no horizonte</div><div class="val" id="k_frota">—</div><div class="sub" id="k_frota_sub">Projeção</div></div>
+          <div class="kpi"><div class="label">Lucro mensal final</div><div class="val" id="k_lucrofinal">—</div><div class="sub" id="k_lucrofinal_sub">Operação madura</div></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Projeção financeira</h3>
+            <div class="selectwrap">
+              <select id="metric">
+                <option value="fatlucro" selected>Faturamento × Lucro</option>
+                <option value="lucro">Lucro líquido</option>
+                <option value="patrimonio">Patrimônio</option>
+                <option value="caixa">Caixa de expansão</option>
+              </select>
+            </div>
+          </div>
+          <canvas id="c_main"></canvas>
+          <div class="legend" id="legend_main"></div>
+        </div>
+
+        <div class="charts">
+          <div class="chart-box"><h4>Evolução da frota</h4><div class="cap">Máquinas ativas por mês</div><canvas id="c_frota"></canvas></div>
+          <div class="chart-box"><h4>Caixa de expansão</h4><div class="cap">Disponível para novas máquinas</div><canvas id="c_caixa"></canvas></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Indicadores da operação</h3></div>
+          <div class="mini-kpis">
+            <div class="mini"><div class="label">Lucro líquido / máquina (mês 1)</div><div class="val good" id="m_lucromaq">—</div></div>
+            <div class="mini"><div class="label">Custo de 1 máquina adicional</div><div class="val" id="m_custonova">—</div></div>
+            <div class="mini"><div class="label">Frota final</div><div class="val" id="m_frota">—</div></div>
+            <div class="mini"><div class="label">Lucro mensal final</div><div class="val good" id="m_lucrofinal">—</div></div>
+            <div class="mini"><div class="label">Pró-labore acumulado</div><div class="val" id="m_prolabore">—</div></div>
+            <div class="mini"><div class="label">Patrimônio em máquinas</div><div class="val" id="m_patrimonio">—</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Evolução mês a mês</h3>
+            <div class="selectwrap">
+              <select id="tableview">
+                <option value="anual" selected>Resumo anual</option>
+                <option value="mensal">Todos os meses</option>
+                <option value="eventos">Só compras de máquina</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead><tr>
+                <th>Mês</th><th>Fase</th><th>Máq.</th><th>Faturamento</th>
+                <th>Imposto</th><th>Lucro líq.</th><th>Pró-labore</th><th>Caixa</th><th>Evento</th>
+              </tr></thead>
+              <tbody id="sim-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="disclaimer">
+          <strong>Projeções ilustrativas</strong> e não constituem garantia de resultado. O sucesso depende do esforço individual, seleção de ponto e execução. Termos vinculantes constam na Circular de Oferta de Franquia (COF), entregue no mínimo 10 dias antes da assinatura, conforme Lei 13.966/2019.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PÁGINA 2 · MERCADO ===================== -->
+<section class="page" id="page-mercado">
+  <div class="wrap">
+    <div class="page-head">
+      <div class="eyebrow">Dados de mercado</div>
+      <h1>Uma janela de oportunidade</h1>
+      <p>O Brasil tem 1 máquina para cada 2.500 habitantes. No Japão, é 1 para cada 25. Não é uma anomalia — é mercado se abrindo.</p>
+    </div>
+
+    <div class="card city-card">
+      <div class="card-head">
+        <h3>Potencial por cidade</h3>
+        <div class="city-search">
+          <input type="text" id="city-input" autocomplete="off" spellcheck="false" placeholder="Digite a cidade ou estado…" aria-label="Buscar cidade ou estado" role="combobox" aria-expanded="false" aria-controls="city-drop">
+          <div class="city-drop" id="city-drop" role="listbox"></div>
+        </div>
+      </div>
+      <div class="city-kpis" id="city-kpis"></div>
+      <div class="city-break" id="city-break"></div>
+      <div class="city-note" id="city-note"></div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat"><div class="big">100×</div><div class="cap">Gap de densidade Brasil × Japão</div><div class="src">Statista · ABVM</div></div>
+      <div class="stat"><div class="big">R$ 1,3 bi+</div><div class="cap">Faturamento do setor no Brasil</div><div class="src">ABVM 2020</div></div>
+      <div class="stat"><div class="big">11,58%</div><div class="cap">CAGR smart vending até 2032</div><div class="src">Grand View Research</div></div>
+      <div class="stat"><div class="big">57%</div><div class="cap">Ocupações no comércio com falta de mão de obra</div><div class="src">CNC jul/2025</div></div>
+    </div>
+
+    <div class="market-grid">
+      <div class="card">
+        <div class="card-head"><h3>Densidade global</h3></div>
+        <div class="table-scroll"><table class="m-table">
+          <thead><tr><th>País</th><th>Densidade</th><th>Total</th><th>Fonte</th></tr></thead>
+          <tbody>
+            <tr><td>Japão</td><td>1 : 25 hab</td><td>4,1 mi</td><td>Statista 2023</td></tr>
+            <tr><td>Coreia do Sul</td><td>1 : 65 hab</td><td>780 mil</td><td>Grand View</td></tr>
+            <tr><td>EUA</td><td>1 : 65 hab</td><td>~5 mi</td><td>Industry data</td></tr>
+            <tr><td>China</td><td>1 : 500 hab</td><td>2,8 mi</td><td>Market analysis</td></tr>
+            <tr class="hi"><td>Brasil</td><td>1 : 2.500 hab</td><td>80–102 mil</td><td>ABVM</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Crise de mão de obra</h3></div>
+        <div class="table-scroll"><table class="m-table">
+          <thead><tr><th>Indicador</th><th>Valor</th><th>Fonte</th></tr></thead>
+          <tbody>
+            <tr><td>Ocupações no comércio com escassez de MO</td><td><b>57%</b></td><td>CNC jul/2025</td></tr>
+            <tr><td>Ocupações com salário acima da média formal</td><td><b>75%</b></td><td>CAGED</td></tr>
+            <tr><td>Custo real de um funcionário CLT</td><td><b>até 3×</b> o salário</td><td>Setorial</td></tr>
+            <tr><td>Desemprego no Brasil</td><td><b>5,8%</b> (mínima)</td><td>IBGE</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Indicadores macro</h3></div>
+        <div class="table-scroll"><table class="m-table">
+          <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>Crescimento anual do setor</td><td><b>10–15%</b> desde 2018</td></tr>
+            <tr><td>CAGR automação varejo Brasil até 2030</td><td><b>6,2%</b> (maior do mundo)</td></tr>
+            <tr><td>Mercado global de vending (2024→2030)</td><td>US$ 27,7 → 34,9 bi</td></tr>
+            <tr><td>Snacks e bebidas (segmento Avend)</td><td>~35% do mercado</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Cashless</h3></div>
+        <span class="pill-tag">Pix · débito · crédito · NFC</span>
+        <div class="table-scroll"><table class="m-table">
+          <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td>Pix · penetração entre adultos brasileiros</td><td><b>90%+</b></td></tr>
+            <tr><td>Cashless · share global da receita de vending</td><td><b>75,8%</b></td></tr>
+            <tr><td>Máquinas de café (fora do segmento Avend)</td><td>~65% do mercado</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card span-2">
+        <div class="card-head"><h3>Potencial de pontos por cidade</h3></div>
+        <div class="table-scroll"><table class="m-table">
+          <thead><tr><th>Tier</th><th>População</th><th>Multiplicadores de pontos premium (por 100k hab)</th></tr></thead>
+          <tbody>
+            <tr><td>Micro</td><td>&lt; 30 mil hab</td><td rowspan="5" style="vertical-align:middle;border-left:1px solid var(--hair)">
+              Hospitais/clínicas <b>×3</b> · Indústrias/galpões <b>×8</b> · Academias de rede <b>×15</b> · Polos corporativos <b>×5</b> · Empresas 50+ funcionários <b>×30</b></td></tr>
+            <tr><td>Pequena</td><td>30k – 100k hab</td></tr>
+            <tr><td>Média</td><td>100k – 500k hab</td></tr>
+            <tr><td>Grande</td><td>500k – 2M hab</td></tr>
+            <tr><td>Metrópole</td><td>&gt; 2M hab</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="card span-2">
+        <p class="quote">"O Brasil tem 1 máquina para cada 2.500 habitantes… não é uma anomalia — é uma janela de oportunidade se abrindo."</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>Avend · ABF Expo 2026</span>
+      <span>Dados: ABVM · Statista · Grand View Research · CNC · IBGE</span>
+    </div>
+  </div>
+</section>
+</main>
+
+<div class="tip" id="tip"></div>
+
+<script src="cities-br.js"></script>
+<script>
+/* ============================================================
+   MODEL — fonte da verdade financeira (handoff app.js)
+   ============================================================ */
+const MODEL = {
+  variavel:{ cmv:.40, aluguelEspaco:.05, royalties:.05, taxaCartoes:.0145, operacionalRota:.03, perdas:.01 },
+  royaltyMinimo:250,
+  fixoPorMaquina:{ fnp:100, sistema:95, manutencao:100 },
+  custoPrimeiraMaquina:55000, custoMaquinaAdicional:35000, custoFreteNova:2000,
+  custoAbastecimentoInicial:1500, valorAtivoPorMaquina:28500,
+  mei:{ limiteAnual:130000, fixoMensal:85 },
+  simplesNacionalFaixas:[
+    { teto:180000,  nominal:.0400, deducao:0 },
+    { teto:360000,  nominal:.0730, deducao:5940 },
+    { teto:720000,  nominal:.0950, deducao:13860 },
+    { teto:1800000, nominal:.1070, deducao:22500 },
+    { teto:3600000, nominal:.1430, deducao:87300 },
+    { teto:4800000, nominal:.1900, deducao:378000 }
+  ],
+  abastecedor:{ salarioMensal:4000, maqPorAbastecedor:10, frotaMinParaContratar:6 }
+};
+
+function calcImpostoMensal(fm){
+  const rbt12 = fm*12;
+  if(rbt12 <= MODEL.mei.limiteAnual) return { regime:"MEI", valor:MODEL.mei.fixoMensal };
+  for(const f of MODEL.simplesNacionalFaixas){
+    if(rbt12 <= f.teto){ const a=(rbt12*f.nominal-f.deducao)/rbt12; return { regime:`Simples ${(f.teto/1000).toFixed(0)}k`, valor:fm*a, aliquota:a }; }
+  }
+  return { regime:"Lucro Presumido", valor:fm*.25, aliquota:.25 };
+}
+function calcularMes(frota, fpm){
+  const ft = frota*fpm;
+  const royaltyPorMaq = Math.max(fpm*MODEL.variavel.royalties, MODEL.royaltyMinimo);
+  const royaltyTotal = royaltyPorMaq*frota;
+  const pct = MODEL.variavel.cmv+MODEL.variavel.aluguelEspaco+MODEL.variavel.taxaCartoes+MODEL.variavel.operacionalRota+MODEL.variavel.perdas;
+  const custoVariavel = ft*pct + royaltyTotal;
+  const fixoMaqTotal = frota*(MODEL.fixoPorMaquina.fnp+MODEL.fixoPorMaquina.sistema+MODEL.fixoPorMaquina.manutencao);
+  const nAbast = frota>=MODEL.abastecedor.frotaMinParaContratar ? Math.floor(frota/MODEL.abastecedor.maqPorAbastecedor) : 0;
+  const custoAbast = nAbast*MODEL.abastecedor.salarioMensal;
+  const imposto = calcImpostoMensal(ft);
+  const lucroLiquido = ft-custoVariavel-fixoMaqTotal-custoAbast-imposto.valor;
+  return { faturamentoTotal:ft, fixoMaqTotal, custoAbast, nAbast, imposto, lucroLiquido, margem:lucroLiquido/ft };
+}
+function simulate(p){
+  const custoNovaMaquina = MODEL.custoMaquinaAdicional+p.reservaCapital+MODEL.custoFreteNova+MODEL.custoAbastecimentoInicial;
+  let maquinasAtivas=1, maquinasPendentes=0, caixa=0, lucroAcumulado=0, contador=1, paybackMeses=null;
+  const linhas=[];
+  for(let mes=1; mes<=p.horizonteMeses; mes++){
+    if(maquinasPendentes>0){ maquinasAtivas+=maquinasPendentes; maquinasPendentes=0; }
+    const m = calcularMes(maquinasAtivas, p.faturamentoPorMaquina);
+    lucroAcumulado += m.lucroLiquido;
+    if(paybackMeses===null && lucroAcumulado>=MODEL.custoPrimeiraMaquina) paybackMeses=mes;
+    const perc = mes<=p.duracaoFase1Meses ? p.percReinvestFase1 : p.percReinvestFase2;
+    const proLabore = m.lucroLiquido*(1-perc/100);
+    caixa += m.lucroLiquido*(perc/100);
+    let comp=0; const ev=[];
+    while(caixa>=custoNovaMaquina && comp<p.capacidadeImplantacao){ caixa-=custoNovaMaquina; maquinasPendentes++; comp++; contador++; ev.push(`${contador}ª máquina`); }
+    linhas.push({ mes, maquinasAtivas, faturamentoTotal:m.faturamentoTotal, imposto:m.imposto, lucroLiquido:m.lucroLiquido,
+      proLabore, fase:mes<=p.duracaoFase1Meses?1:2, margem:m.margem, caixaAcumulado:caixa,
+      patrimonio:maquinasAtivas*MODEL.valorAtivoPorMaquina, evento:ev.join(" · ") });
+  }
+  const u=linhas[linhas.length-1];
+  const totFat=linhas.reduce((s,r)=>s+r.faturamentoTotal,0);
+  const totLucro=linhas.reduce((s,r)=>s+r.lucroLiquido,0);
+  return { linhas, custoNovaMaquina, paybackMeses,
+    margem1Maq:linhas[0].margem, margemFinal:u.margem, margemAgregada:totLucro/totFat,
+    lucro1Maq:linhas[0].lucroLiquido,
+    frotaFinal:u.maquinasAtivas, lucroMensalFinal:u.lucroLiquido, regimeFinal:u.imposto.regime,
+    totalProLabore:linhas.reduce((s,r)=>s+r.proLabore,0), patrimonioFinal:u.maquinasAtivas*MODEL.valorAtivoPorMaquina };
+}
+
+const PRESETS = {
+  conservador:{ f_fat:7000,  f_r1:100, f_d1:36, f_r2:50,  f_res:5000, f_cap:'1', f_hor:'60' },
+  base:       { f_fat:10000, f_r1:100, f_d1:36, f_r2:50,  f_res:5000, f_cap:'2', f_hor:'60' },
+  otimista:   { f_fat:15000, f_r1:100, f_d1:48, f_r2:70,  f_res:5000, f_cap:'3', f_hor:'60' },
+  turbo:      { f_fat:12000, f_r1:100, f_d1:60, f_r2:100, f_res:5000, f_cap:'3', f_hor:'84' }
+};
+
+const brl = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
+const fmtR$ = v => brl.format(Math.round(v));
+const fmtPct = v => (v*100).toFixed(1).replace('.',',')+'%';
+const kBRL = v => Math.abs(v)>=1000 ? 'R$'+(v/1000).toFixed(0)+'k' : 'R$'+Math.round(v);
+function fmtPayback(m){ if(m===null)return'—'; if(m<12)return m+' meses'; const a=Math.floor(m/12),r=m%12; return r===0?a+(a>1?' anos':' ano'):`${a}a ${r}m`; }
+function fmtAnos(meses){ const a=meses/12; return Number.isInteger(a)?a+(a>1?' anos':' ano'):meses+' meses'; }
+
+/* ============================================================
+   Gráficos com hover + tooltip (canvas, tema dark Linear)
+   ============================================================ */
+const GRID='#23252a', AXIS='#62666d', CROSS='#3e3e44', POINT_BG='#010102';
+const tip = document.getElementById('tip');
+const CHARTS = {};
+
+function drawChart(canvas, cfg, hover){
+  const dpr = window.devicePixelRatio||1;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if(w<=0 || h<=0){ CHARTS[canvas.id]=cfg; return; }  // canvas escondido: adia o desenho
+  canvas.width=w*dpr; canvas.height=h*dpr;
+  const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+
+  const padL = cfg.padL ?? 50, padR = 14, padT = 12, padB = 22;
+  const n = cfg.series[0].data.length;
+  let max=0, min=0;
+  cfg.series.forEach(s=>s.data.forEach(v=>{ if(v>max)max=v; if(v<min)min=v; }));
+  max = max*1.1 || 1; if(min>0)min=0;
+  const range = max-min;
+  const x = i => padL + (w-padL-padR)*(n<=1?0:i/(n-1));
+  const y = v => padT + (h-padT-padB)*(1-(v-min)/range);
+  const stepX = n<=1?0:(w-padL-padR)/(n-1);
+
+  ctx.strokeStyle=GRID; ctx.lineWidth=1; ctx.fillStyle=AXIS;
+  ctx.font='11px Inter,system-ui,sans-serif'; ctx.textAlign='right'; ctx.textBaseline='middle';
+  const steps=4;
+  for(let i=0;i<=steps;i++){ const val=min+range*i/steps, yy=y(val);
+    ctx.beginPath(); ctx.moveTo(padL,yy); ctx.lineTo(w-padR,yy); ctx.stroke();
+    ctx.fillText(cfg.fmtY?cfg.fmtY(val):Math.round(val), padL-8, yy); }
+  ctx.textAlign='center'; ctx.textBaseline='top';
+  const xt = n<=12?1:Math.ceil(n/6);
+  for(let i=0;i<n;i+=xt){ ctx.fillText('m'+cfg.labels[i], x(i), h-padB+6); }
+
+  cfg.series.forEach(s=>{
+    if(s.fill){
+      const g=ctx.createLinearGradient(0,padT,0,h-padB);
+      g.addColorStop(0,s.color+'30'); g.addColorStop(1,s.color+'00');
+      ctx.beginPath(); ctx.moveTo(x(0),y(s.data[0]));
+      for(let i=1;i<n;i++) ctx.lineTo(x(i),y(s.data[i]));
+      ctx.lineTo(x(n-1),y(min)); ctx.lineTo(x(0),y(min)); ctx.closePath(); ctx.fillStyle=g; ctx.fill();
+    }
+    ctx.beginPath(); ctx.moveTo(x(0),y(s.data[0]));
+    for(let i=1;i<n;i++) ctx.lineTo(x(i),y(s.data[i]));
+    ctx.strokeStyle=s.color; ctx.lineWidth=2; ctx.lineJoin='round'; ctx.stroke();
+  });
+
+  if(hover!=null && hover>=0 && hover<n){
+    const hx=x(hover);
+    ctx.strokeStyle=CROSS; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(hx,padT); ctx.lineTo(hx,h-padB); ctx.stroke(); ctx.setLineDash([]);
+    cfg.series.forEach(s=>{
+      const py=y(s.data[hover]);
+      ctx.beginPath(); ctx.arc(hx,py,4.5,0,7); ctx.fillStyle=POINT_BG; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle=s.color; ctx.stroke();
+    });
+  }
+  canvas._geo = { padL, stepX, n };
+}
+
+function bindHover(canvas, cfg){
+  CHARTS[canvas.id] = cfg;
+  function move(e){
+    const rect=canvas.getBoundingClientRect();
+    const cx=e.clientX??(e.touches&&e.touches[0].clientX), cy=e.clientY??(e.touches&&e.touches[0].clientY);
+    const g=canvas._geo; if(!g)return;
+    let i=Math.round((cx-rect.left-g.padL)/(g.stepX||1)); i=Math.max(0,Math.min(g.n-1,i));
+    drawChart(canvas, cfg, i);
+    let html=`<div class="t-m">Mês ${cfg.labels[i]}</div>`;
+    cfg.series.forEach(s=>{ html+=`<div class="t-r"><span><i style="background:${s.color}"></i>${s.name}</span><span>${cfg.fmtTip(s.data[i])}</span></div>`; });
+    tip.innerHTML=html; tip.style.opacity='1';
+    const tw=tip.offsetWidth, th=tip.offsetHeight;
+    let px=cx+14, py=cy-th-14;
+    if(px+tw>window.innerWidth-8) px=cx-tw-14;
+    if(py<8) py=cy+18;
+    tip.style.left=px+'px'; tip.style.top=py+'px';
+  }
+  function leave(){ tip.style.opacity='0'; drawChart(canvas,cfg,null); }
+  canvas.addEventListener('pointermove',move);
+  canvas.addEventListener('pointerdown',move);
+  canvas.addEventListener('pointerleave',leave);
+  canvas.addEventListener('pointerup',leave);
+}
+function redraw(id){ const c=document.getElementById(id); if(c&&CHARTS[id]) drawChart(c,CHARTS[id],null); }
+
+/* ============================================================
+   Render
+   ============================================================ */
+const $ = id => document.getElementById(id);
+let R = null;
+
+function readParams(){
+  return {
+    faturamentoPorMaquina:+$('f_fat').value, percReinvestFase1:+$('f_r1').value,
+    duracaoFase1Meses:+$('f_d1').value, percReinvestFase2:+$('f_r2').value,
+    reservaCapital:+$('f_res').value, capacidadeImplantacao:+$('f_cap').value, horizonteMeses:+$('f_hor').value
+  };
+}
+/* Campos numéricos editáveis ligados aos sliders. d1 exibido em anos. */
+const NUM=[ {r:'f_fat',n:'n_fat'},{r:'f_r1',n:'n_r1'},
+  {r:'f_d1',n:'n_d1',toN:m=>m/12,toR:y=>Math.round(y)*12},
+  {r:'f_r2',n:'n_r2'},{r:'f_res',n:'n_res'} ];
+function clampStep(v,min,max,step){ v=Math.round((v-min)/step)*step+min; return Math.max(min,Math.min(max,v)); }
+function syncOutputs(){
+  NUM.forEach(it=>{ const ni=$(it.n); if(ni && document.activeElement!==ni){ const rv=+$(it.r).value; ni.value=it.toN?it.toN(rv):rv; } });
+}
+
+function buildMainChart(){
+  const L=R.linhas, labels=L.map(l=>l.mes), metric=$('metric').value;
+  let series, legend;
+  if(metric==='fatlucro'){
+    series=[ {name:'Faturamento',data:L.map(l=>l.faturamentoTotal),color:'#5e6ad2',fill:true},
+             {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#27a644'} ];
+    legend='<span><i style="background:#5e6ad2"></i>Faturamento</span><span><i style="background:#27a644"></i>Lucro líquido</span>';
+  } else if(metric==='lucro'){
+    series=[ {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#27a644',fill:true} ];
+    legend='<span><i style="background:#27a644"></i>Lucro líquido mensal</span>';
+  } else if(metric==='patrimonio'){
+    series=[ {name:'Patrimônio',data:L.map(l=>l.patrimonio),color:'#7a7fad',fill:true} ];
+    legend='<span><i style="background:#7a7fad"></i>Patrimônio em máquinas</span>';
+  } else {
+    series=[ {name:'Caixa',data:L.map(l=>l.caixaAcumulado),color:'#828fff',fill:true} ];
+    legend='<span><i style="background:#828fff"></i>Caixa de expansão</span>';
+  }
+  $('legend_main').innerHTML=legend;
+  bindHover($('c_main'), { series, labels, fmtY:kBRL, fmtTip:fmtR$, padL:54 });
+  drawChart($('c_main'), CHARTS['c_main'], null);
+}
+
+function buildTable(){
+  const L=R.linhas, view=$('tableview').value;
+  let rows=L;
+  if(view==='anual') rows=L.filter(l=>l.mes%12===0 || l.mes===1 || l.mes===L.length);
+  else if(view==='eventos') rows=L.filter(l=>l.evento);
+  if(rows.length===0) rows=[L[L.length-1]];
+  $('sim-tbody').innerHTML = rows.map(l=>`
+    <tr class="${l.evento?'event':''}">
+      <td>${l.mes}</td>
+      <td style="text-align:center"><span class="badge f${l.fase}">F${l.fase}</span></td>
+      <td>${l.maquinasAtivas}</td>
+      <td>${fmtR$(l.faturamentoTotal)}</td>
+      <td>${fmtR$(l.imposto.valor)}<br><span class="regime">${l.imposto.regime}</span></td>
+      <td class="${l.lucroLiquido>=0?'pos':'neg'}">${fmtR$(l.lucroLiquido)}</td>
+      <td>${fmtR$(l.proLabore)}</td>
+      <td>${fmtR$(l.caixaAcumulado)}</td>
+      <td>${l.evento?`<span class="evt">${l.evento}</span>`:''}</td>
+    </tr>`).join('');
+}
+
+function render(){
+  syncOutputs();
+  const p=readParams(); R=simulate(p);
+
+  $('k_payback').textContent=fmtPayback(R.paybackMeses);
+  $('k_margem').textContent=fmtPct(R.margemFinal);   // margem na escala (frota + impostos)
+  $('k_margem_sub').textContent=`Operação madura · ${R.frotaFinal} máq · ${R.regimeFinal}`;
+  $('k_frota').textContent=R.frotaFinal;
+  $('k_frota_sub').textContent=`Projeção · após ${fmtAnos(p.horizonteMeses)}`;
+  $('k_lucrofinal').textContent=fmtR$(R.lucroMensalFinal);
+  $('k_lucrofinal_sub').textContent=`Mês ${p.horizonteMeses} · ${R.regimeFinal}`;
+
+  $('m_lucromaq').textContent=fmtR$(R.lucro1Maq);
+  $('m_custonova').textContent=fmtR$(R.custoNovaMaquina);
+  $('m_frota').textContent=R.frotaFinal+' máquinas';
+  $('m_lucrofinal').textContent=fmtR$(R.lucroMensalFinal);
+  $('m_prolabore').textContent=fmtR$(R.totalProLabore);
+  $('m_patrimonio').textContent=fmtR$(R.patrimonioFinal);
+
+  buildMainChart();
+  bindHover($('c_frota'), { series:[{name:'Máquinas',data:R.linhas.map(l=>l.maquinasAtivas),color:'#9aa2ff',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:v=>Math.round(v), fmtTip:v=>Math.round(v)+' máq.', padL:40 });
+  drawChart($('c_frota'),CHARTS['c_frota'],null);
+  bindHover($('c_caixa'), { series:[{name:'Caixa',data:R.linhas.map(l=>l.caixaAcumulado),color:'#828fff',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:kBRL, fmtTip:fmtR$, padL:54 });
+  drawChart($('c_caixa'),CHARTS['c_caixa'],null);
+  buildTable();
+  buildCityDashboard();   // recalcula o potencial de cidade com o faturamento atual
+}
+
+/* ============================================================
+   Dashboard de cidade — cruza população (IBGE aprox.) com os
+   dados do handoff: tiers, multiplicadores premium e densidade.
+   ============================================================ */
+/* Base IBGE (Censo 2022) carregada de cities-br.js: [nome, UF, pop] */
+const MUN = (window.CIDADES_BR||[]).map(c=>({nome:c[0],uf:c[1],pop:c[2],tipo:'cidade'}));
+const EST = (window.ESTADOS_BR||[]).map(c=>({nome:c[0],uf:c[1],pop:c[2],tipo:'estado'}));
+const LOCS = EST.concat(MUN);
+let selectedLoc = MUN.find(c=>c.nome==='São José do Rio Preto' && c.uf==='SP') || MUN[0];
+const locLabel = c => c.tipo==='estado' ? `${c.nome} · estado inteiro` : `${c.nome} · ${c.uf}`;
+const TIERS=[
+  {max:30000,    tier:'Micro',     label:'Cidade pequena'},
+  {max:100000,   tier:'Pequena',   label:'Média-pequena'},
+  {max:500000,   tier:'Média',     label:'Média'},
+  {max:2000000,  tier:'Grande',    label:'Grande'},
+  {max:Infinity, tier:'Metrópole', label:'Metrópole'}
+];
+const PREMIUM=[
+  {k:'Hospitais / clínicas',f:3},{k:'Indústrias / galpões',f:8},
+  {k:'Academias de rede',f:15},{k:'Polos corporativos',f:5},
+  {k:'Empresas 50+ func.',f:30}
+];
+const DENS_BR=2500, DENS_JP=25;
+const fmtNum = n => new Intl.NumberFormat('pt-BR').format(Math.round(n));
+const tierOf = pop => TIERS.find(t=>pop<=t.max);
+
+function buildCityDashboard(){
+  const c=selectedLoc; if(!c) return;
+  const pop=c.pop, t=tierOf(pop), per100k=pop/100000;
+  const premium=PREMIUM.map(p=>({k:p.k,f:p.f,n:Math.round(p.f*per100k)}));
+  const totalPremium=premium.reduce((s,p)=>s+p.n,0);
+  const maqHoje=Math.round(pop/DENS_BR);
+  const potJapao=Math.round(pop/DENS_JP);
+  const fatBase=+$('f_fat').value;                 // ← cruza com o simulador
+  const fatPotencial=totalPremium*fatBase;
+  const escopo = c.tipo==='estado' ? `Estado · ${c.nome}` : `${t.tier} · ${t.label}`;
+
+  $('city-kpis').innerHTML=`
+    <div class="ckpi"><div class="label">População</div><div class="val">${fmtNum(pop)}</div><div class="sub"><span class="tier-pill">${c.tipo==='estado'?'Estado':t.tier}</span> ${c.tipo==='estado'?c.uf:t.label}</div></div>
+    <div class="ckpi"><div class="label">Máquinas hoje (densidade BR)</div><div class="val">${fmtNum(maqHoje)}</div><div class="sub">1 : ${fmtNum(DENS_BR)} hab</div></div>
+    <div class="ckpi accent"><div class="label">Pontos premium estimados</div><div class="val">${fmtNum(totalPremium)}</div><div class="sub">alvos de alta conversão</div></div>
+    <div class="ckpi"><div class="label">Faturamento potencial / mês</div><div class="val">${kBRL(fatPotencial)}</div><div class="sub">${fmtNum(totalPremium)} pts × ${fmtR$(fatBase)}</div></div>
+    <div class="ckpi"><div class="label">Teto · densidade Japão</div><div class="val">${fmtNum(potJapao)}</div><div class="sub">1 : ${DENS_JP} hab</div></div>`;
+  $('city-break').innerHTML=premium.map(p=>`<div class="brk"><span class="n">${p.k}</span><span class="v">${fmtNum(p.n)} <small>×${p.f}/100k</small></span></div>`).join('');
+  $('city-note').innerHTML=`Síntese cruzando a <b>população de ${locLabel(c)}</b> (IBGE · Censo 2022) com os multiplicadores de pontos premium do handoff (por 100k hab) e a densidade brasileira (1:${fmtNum(DENS_BR)}). O faturamento potencial usa o <b>faturamento/máquina do simulador (${fmtR$(fatBase)})</b> — ajuste-o na aba Simulador para recalcular.`;
+}
+
+let raf=null;
+function scheduleRender(){ if(raf)cancelAnimationFrame(raf); raf=requestAnimationFrame(render); }
+
+function applyPreset(name){
+  const pre=PRESETS[name];
+  for(const id in pre) $(id).value=pre[id];
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active',c.dataset.preset===name));
+  render();
+}
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applyPreset(c.dataset.preset)));
+['f_fat','f_r1','f_d1','f_r2','f_res'].forEach(id=>$(id).addEventListener('input',()=>{
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); scheduleRender();
+}));
+// Inputs numéricos digitáveis → atualizam o slider correspondente
+NUM.forEach(it=>{
+  const ni=$(it.n), range=$(it.r);
+  ni.addEventListener('input',()=>{
+    let raw=parseFloat(ni.value); if(isNaN(raw)) return;
+    let rv=it.toR?it.toR(raw):raw;
+    rv=clampStep(rv,+range.min,+range.max,+range.step);
+    range.value=rv;
+    document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+    scheduleRender();
+  });
+  ni.addEventListener('blur',()=>{ syncOutputs(); });   // re-exibe valor canônico (clamp)
+});
+// ===== Autocomplete de cidade/estado (base IBGE) =====
+(function(){
+  const inp=$('city-input'), drop=$('city-drop'); if(!inp) return;
+  let hi=-1;
+  const norm=s=>(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+
+  function options(q){
+    const nq=norm(q).trim();
+    if(!nq) return EST.slice(0,6).concat(MUN.slice(0,40));      // sugestões: estados + maiores cidades
+    const starts=[], incl=[];
+    for(const loc of LOCS){
+      const n=norm(loc.nome);
+      if(n.startsWith(nq) || norm(loc.uf)===nq) starts.push(loc);
+      else if(n.includes(nq)) incl.push(loc);
+      if(starts.length>=80) break;
+    }
+    return starts.concat(incl).slice(0,80);
+  }
+  function render(q){
+    const list=options(q); drop._list=list; hi=-1;
+    drop.innerHTML = list.length
+      ? list.map((l,i)=>`<div class="city-opt ${l.tipo==='estado'?'estado':''}" data-i="${i}" role="option">
+          <span class="nm">${l.nome}</span><span class="uf">${l.tipo==='estado'?'Estado':l.uf}</span><span class="pop">${fmtNum(l.pop)}</span></div>`).join('')
+      : '<div class="city-empty">Nenhuma cidade encontrada</div>';
+  }
+  function open(){ render(inp.value); drop.classList.add('open'); inp.setAttribute('aria-expanded','true'); }
+  function close(){ drop.classList.remove('open'); inp.setAttribute('aria-expanded','false'); }
+  function pick(loc){ if(!loc)return; selectedLoc=loc; inp.value=locLabel(loc); close(); buildCityDashboard(); }
+  function paint(opts){ opts.forEach((o,k)=>o.classList.toggle('active',k===hi)); if(opts[hi])opts[hi].scrollIntoView({block:'nearest'}); }
+
+  inp.addEventListener('focus',()=>{ inp.select(); open(); });
+  inp.addEventListener('input',open);
+  inp.addEventListener('keydown',e=>{
+    const opts=[...drop.querySelectorAll('.city-opt[data-i]')];
+    if(e.key==='ArrowDown'){ e.preventDefault(); hi=Math.min(opts.length-1,hi+1); paint(opts); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); hi=Math.max(0,hi-1); paint(opts); }
+    else if(e.key==='Enter'){ e.preventDefault(); const el=opts[hi<0?0:hi]; if(el) pick(drop._list[+el.dataset.i]); }
+    else if(e.key==='Escape'){ close(); inp.blur(); }
+  });
+  drop.addEventListener('mousedown',e=>{   // mousedown: dispara antes do blur do input
+    const el=e.target.closest('.city-opt[data-i]'); if(!el)return;
+    e.preventDefault(); pick(drop._list[+el.dataset.i]);
+  });
+  document.addEventListener('click',e=>{ if(!e.target.closest('.city-search')) close(); });
+
+  // valor inicial
+  if(selectedLoc) inp.value=locLabel(selectedLoc);
+})();
+['f_cap','f_hor'].forEach(id=>$(id).addEventListener('change',()=>{
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); render();
+}));
+$('metric').addEventListener('change',buildMainChart);
+$('tableview').addEventListener('change',buildTable);
+
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $('page-'+name).classList.add('active');
+  document.querySelectorAll('.navlink').forEach(x=>{ const on=x.dataset.page===name; x.classList.toggle('active',on); x.setAttribute('aria-selected',on); });
+  window.scrollTo(0,0);
+  if(name==='simulador' && R){ ['c_main','c_frota','c_caixa'].forEach(redraw); }
+}
+document.querySelectorAll('.navlink').forEach(b=>b.addEventListener('click',()=>goPage(b.dataset.page)));
+
+// Iniciar atendimento → sai da intro, reinicia no cenário base
+$('start-btn').addEventListener('click',()=>{
+  document.body.classList.remove('intro-mode');
+  goPage('simulador');
+  applyPreset('base');
+});
+// Logo → volta à tela inicial (novo atendimento)
+$('home').addEventListener('click',()=>{
+  document.body.classList.add('intro-mode');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  $('page-intro').classList.add('active');
+  document.querySelectorAll('.navlink').forEach(x=>{x.classList.remove('active');x.setAttribute('aria-selected','false')});
+  window.scrollTo(0,0);
+});
+
+let rzT; window.addEventListener('resize',()=>{ clearTimeout(rzT); rzT=setTimeout(()=>{ ['c_main','c_frota','c_caixa'].forEach(redraw); },150); });
+
+// Logo central da intro reaproveita a logo branca já embutida no topo
+(function(){ const l=$('intro-logo'), h=$('home'); if(l&&h) l.src=h.src; })();
+
+applyPreset('base');
+</script>
+</body>
+</html>
