@@ -6,7 +6,7 @@
 <title>Avend · Simulador de Franquia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
 <style>
 /* ============================================================
    Avend · Simulador — Design System
@@ -16,37 +16,40 @@
    Base de conteúdo: Handoff técnico do simulador AVEND.
    ============================================================ */
 :root{
-  /* — Acento único (lavanda Linear) — */
-  --primary:       #5e6ad2;
-  --primary-hover: #828fff;
-  --primary-focus: #5e69d1;
+  /* — Acentos da marca Avend (azul + ciano + roxo) — */
+  --primary:       #4d7fe8;   /* azul Avend (#264E94) brilhado p/ contraste no escuro */
+  --primary-hover: #6b97f5;
+  --primary-focus: #5a8df0;
   --on-primary:    #ffffff;
+  --cyan:          #6CBBCA;   /* ciano da marca — destaques/dados */
+  --purple:        #8b7fd6;   /* roxo da marca (#584691) brilhado */
+  --brand-grad:    linear-gradient(120deg,#6b97f5 0%,#6CBBCA 50%,#a7e8ef 100%);
 
-  /* — Canvas + escada de superfícies — */
-  --canvas:    #010102;
-  --surface-1: #0f1011;
-  --surface-2: #141516;
-  --surface-3: #18191a;
-  --surface-4: #191a1b;
+  /* — Canvas + escada de superfícies (navy-índigo da marca, mais leve) — */
+  --canvas:    #181D3E;
+  --surface-1: #222A52;
+  --surface-2: #2A3361;
+  --surface-3: #333D70;
+  --surface-4: #3A4580;
 
-  /* — Hairlines — */
-  --hair:     #23252a;
-  --hair-strong:#34343a;
-  --hair-tert:#3e3e44;
+  /* — Hairlines (azulados) — */
+  --hair:      #3A4470;
+  --hair-strong:#4A5688;
+  --hair-tert: #56649C;
 
-  /* — Texto — */
-  --ink:        #f7f8f8;
-  --ink-muted:  #d0d6e0;
-  --ink-subtle: #8a8f98;
-  --ink-tert:   #62666d;
+  /* — Texto (mais claro/contraste p/ leitura) — */
+  --ink:        #F3F5FD;
+  --ink-muted:  #CDD4F0;
+  --ink-subtle: #9BA4CE;
+  --ink-tert:   #767FAE;
 
-  /* — Semântico (único permitido) + dados de gráfico — */
-  --success:#27a644;
-  --c-fat:  #5e6ad2;   /* faturamento — lavanda */
-  --c-lucro:#27a644;   /* lucro — verde sucesso */
-  --c-caixa:#828fff;   /* caixa — lavanda claro */
-  --c-patr: #7a7fad;   /* patrimônio — lavanda-gray */
-  --c-frota:#9aa2ff;
+  /* — Semântico + dados de gráfico (paleta marca) — */
+  --success:#2BD47A;   /* verde da marca (#22C55E) vivo p/ dark */
+  --c-fat:  #4d7fe8;   /* faturamento — azul */
+  --c-lucro:#2BD47A;   /* lucro — verde */
+  --c-caixa:#6CBBCA;   /* caixa — ciano */
+  --c-patr: #8b7fd6;   /* patrimônio — roxo */
+  --c-frota:#7fa8ff;
 
   /* — Raios (escala Linear) — */
   --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-pill:9999px;
@@ -60,17 +63,33 @@ body{
   color:var(--ink-muted); background:var(--canvas);
   -webkit-font-smoothing:antialiased; overflow-x:hidden;
 }
-h1,h2,h3,h4{font-family:'Inter',system-ui,sans-serif;color:var(--ink);font-weight:600;letter-spacing:-.4px}
+h1,h2,h3,h4{font-family:'Poppins','Inter',system-ui,sans-serif;color:var(--ink);font-weight:600;letter-spacing:-.4px}
 button,input,select{font-family:inherit}
-::selection{background:rgba(94,106,210,.32)}
-:focus-visible{outline:2px solid rgba(94,105,209,.5);outline-offset:2px;border-radius:4px}
+::selection{background:rgba(77,127,232,.32)}
+:focus-visible{outline:2px solid rgba(77,127,232,.5);outline-offset:2px;border-radius:4px}
+
+/* ——— FUNDO AMBIENTE GLOBAL (LEDs sutis da marca) ——— */
+.app-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.app-bg .glow{position:absolute;border-radius:50%;filter:blur(80px)}
+.app-bg .glow.a{width:540px;height:540px;left:-140px;top:-120px;background:rgba(38,78,148,.45);animation:floatA 24s ease-in-out infinite}
+.app-bg .glow.b{width:480px;height:480px;right:-140px;bottom:-140px;background:rgba(108,187,202,.20);animation:floatB 28s ease-in-out infinite}
+.app-bg .glow.c{width:380px;height:380px;left:45%;top:35%;background:rgba(124,107,208,.14);animation:floatA 32s ease-in-out infinite}
+.app-bg .grid{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 94px,rgba(108,187,202,.035) 94px 95px)}
+.app-bg .vled{position:absolute;top:-5%;bottom:-5%;width:1px;background:linear-gradient(180deg,transparent,rgba(108,187,202,.55) 45%,rgba(77,127,232,.5) 55%,transparent);opacity:.1;animation:ledpulse 7s ease-in-out infinite}
+.app-bg .vled:nth-child(5){left:18%;animation-duration:8s}
+.app-bg .vled:nth-child(6){left:52%;animation-duration:6s;animation-delay:-2s}
+.app-bg .vled:nth-child(7){left:83%;animation-duration:7.5s;animation-delay:-3s}
+@keyframes floatA{0%,100%{transform:translate(0,0)}50%{transform:translate(46px,34px)}}
+@keyframes floatB{0%,100%{transform:translate(0,0)}50%{transform:translate(-46px,-30px)}}
+main{position:relative;z-index:1}
+@media (prefers-reduced-motion:reduce){ .app-bg .glow,.app-bg .vled{animation:none} }
 
 /* ——— TOP NAV (Linear: dark, 56px) ——————————— */
 .topnav{
   position:sticky; top:0; z-index:50; height:56px;
   display:flex; align-items:center; gap:24px;
   padding:0 max(24px,env(safe-area-inset-left));
-  background:rgba(1,1,2,.72); backdrop-filter:saturate(180%) blur(20px);
+  background:rgba(24,29,62,.78); backdrop-filter:saturate(180%) blur(20px);
   -webkit-backdrop-filter:saturate(180%) blur(20px);
   border-bottom:1px solid var(--hair);
 }
@@ -86,7 +105,7 @@ body.intro-mode .topnav .cta{display:none}
   transition:color .15s ease,background .15s ease;
 }
 .navlink:hover{color:var(--ink);background:var(--surface-1)}
-.navlink.active{color:var(--ink)}
+.navlink.active{color:#fff;background:var(--primary)}
 .cta{
   border:0;cursor:pointer;background:var(--primary);color:var(--on-primary);
   font-size:13px;font-weight:500;padding:7px 13px;border-radius:var(--r-md);white-space:nowrap;
@@ -131,8 +150,8 @@ body.intro-mode .topnav .cta{display:none}
 .start-btn{margin-top:40px;border:0;cursor:pointer;background:var(--primary);color:var(--on-primary);
   font-size:17px;font-weight:600;letter-spacing:-.1px;padding:17px 38px;border-radius:var(--r-md);
   display:inline-flex;align-items:center;gap:10px;
-  box-shadow:0 8px 30px rgba(94,106,210,.35);transition:background .15s ease,transform .12s ease,box-shadow .15s ease}
-.start-btn:hover{background:var(--primary-hover);box-shadow:0 10px 38px rgba(94,106,210,.5)}
+  box-shadow:0 8px 30px rgba(77,127,232,.35);transition:background .15s ease,transform .12s ease,box-shadow .15s ease}
+.start-btn:hover{background:var(--primary-hover);box-shadow:0 10px 38px rgba(77,127,232,.5)}
 .start-btn:active{transform:scale(.97)}
 .start-btn svg{width:18px;height:18px}
 .intro-feats{display:flex;gap:14px;margin-top:48px;flex-wrap:wrap;justify-content:center}
@@ -161,7 +180,7 @@ body.intro-mode .topnav .cta{display:none}
   transition:background .15s ease,color .15s ease,border-color .15s ease;
 }
 .chip:hover{color:var(--ink);border-color:var(--hair-strong)}
-.chip.active{background:var(--surface-3);color:var(--ink);border-color:var(--hair-strong)}
+.chip.active{background:var(--primary);color:#fff;border-color:var(--primary);box-shadow:0 4px 14px rgba(77,127,232,.35)}
 
 /* Sliders (accent lavanda nativo) */
 .field{margin-bottom:18px}
@@ -172,7 +191,7 @@ input[type=range]{width:100%;height:4px;accent-color:var(--primary);cursor:point
 .numwrap{display:inline-flex;align-items:center;gap:3px;flex-shrink:0;
   background:var(--surface-2);border:1px solid var(--hair);border-radius:var(--r-sm);
   padding:3px 8px;transition:border-color .15s ease,box-shadow .15s ease}
-.numwrap:focus-within{border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.22)}
+.numwrap:focus-within{border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(77,127,232,.22)}
 .numwrap .pfx{font-size:13px;color:var(--ink-subtle)}
 .numin{width:56px;border:0;background:transparent;color:var(--ink);
   font-size:14px;font-weight:600;text-align:right;font-variant-numeric:tabular-nums;
@@ -190,7 +209,7 @@ select{
   transition:border-color .15s ease;
 }
 select:hover{border-color:var(--hair-strong)}
-select:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.25)}
+select:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(77,127,232,.25)}
 option{background:var(--surface-2);color:var(--ink)}
 .selectwrap::after{content:'';position:absolute;right:15px;bottom:18px;width:7px;height:7px;border-right:1.5px solid var(--ink-subtle);border-bottom:1.5px solid var(--ink-subtle);transform:rotate(45deg);pointer-events:none}
 
@@ -198,19 +217,55 @@ option{background:var(--surface-2);color:var(--ink)}
 .results{display:flex;flex-direction:column;gap:24px;min-width:0}
 
 .hero-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.kpi{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:20px;position:relative}
-.kpi::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);border-radius:var(--r-lg) var(--r-lg) 0 0}
+.kpi{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:20px;position:relative;overflow:hidden;animation:cardglow 6s ease-in-out infinite}
+.kpi:nth-child(2){animation-delay:-1.5s}.kpi:nth-child(3){animation-delay:-3s}.kpi:nth-child(4){animation-delay:-4.5s}
+.kpi::before{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--primary),transparent);background-size:200% 100%;animation:sheen 7s linear infinite;border-radius:var(--r-lg) var(--r-lg) 0 0}
 .kpi .label{font-size:13px;color:var(--ink-subtle);font-weight:400}
-.kpi .val{font-size:30px;font-weight:600;line-height:1.05;letter-spacing:-1px;color:var(--ink);margin:12px 0 5px;font-variant-numeric:tabular-nums}
+.kpi .val{font-size:30px;font-weight:700;line-height:1.05;letter-spacing:-1px;margin:12px 0 5px;font-variant-numeric:tabular-nums;
+  background:var(--brand-grad);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 9s linear infinite}
 .kpi .sub{font-size:12px;color:var(--ink-tert)}
-.kpi.feature{background:var(--surface-2);border-color:var(--hair-strong)}
-.kpi.feature .val{color:var(--primary-hover)}
+.kpi.feature{background:var(--surface-2);border-color:var(--hair-strong);box-shadow:0 0 0 1px rgba(108,187,202,.12)}
+@media (prefers-reduced-motion:reduce){ .kpi,.kpi::before,.kpi .val{animation:none} }
 
 .mini-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
 .mini{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px}
 .mini .label{font-size:12px;color:var(--ink-subtle)}
 .mini .val{font-size:20px;font-weight:600;color:var(--ink);margin-top:5px;letter-spacing:-.4px;font-variant-numeric:tabular-nums}
 .mini .val.good{color:var(--success)}
+
+/* ——— Condição da Feira ——————————————————— */
+.feira-card{border-color:var(--hair-strong);background:linear-gradient(180deg,rgba(77,127,232,.06),transparent 60%),var(--surface-1)}
+.feira-offer{font-size:13.5px;color:var(--ink-muted);line-height:1.5;margin-bottom:18px}
+.feira-offer b{color:var(--ink);font-weight:600}
+.feira-btn{display:inline-flex;align-items:center;gap:9px;cursor:pointer;user-select:none;
+  border:1.5px solid var(--hair-strong);background:var(--surface-2);color:var(--ink-muted);
+  font-family:'Inter',sans-serif;font-size:14px;font-weight:600;letter-spacing:-.1px;
+  padding:11px 20px;border-radius:var(--r-pill);transition:all .18s ease}
+.feira-btn:hover{border-color:var(--primary);color:var(--ink);transform:translateY(-1px)}
+.feira-btn:active{transform:scale(.97)}
+.feira-btn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(77,127,232,.35)}
+.feira-btn .ic{width:17px;height:17px;flex-shrink:0}
+.feira-btn .ic-check{width:0;opacity:0;margin-left:-9px;transition:all .2s ease}
+.feira-btn.on{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 6px 22px rgba(77,127,232,.45)}
+.feira-btn.on .ic-check{width:17px;opacity:1;margin-left:0}
+.feira-btn.on .ic-bolt{display:none}
+.feira-compare{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fcol{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px}
+.fcol.feira{border-color:var(--primary-focus);background:linear-gradient(180deg,rgba(77,127,232,.10),transparent),var(--canvas)}
+.fcol.active{box-shadow:0 0 0 2px var(--primary)}
+.fcol-h{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--ink-subtle);margin-bottom:12px}
+.fcol.feira .fcol-h{color:var(--primary-hover)}
+.fcol-h .on{font-size:10px;font-weight:600;text-transform:none;letter-spacing:0;color:#fff;background:var(--primary);padding:1px 7px;border-radius:var(--r-pill)}
+.frow{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-top:1px solid var(--hair)}
+.frow:first-of-type{border-top:0}
+.frow span{font-size:13px;color:var(--ink-subtle)}
+.frow b{font-size:15px;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
+.frow.save b{color:var(--success)}
+.frow .delta{font-size:11px;color:var(--success);font-weight:500;margin-left:6px}
+.frow.sub{padding:5px 0}
+.frow.sub b{font-size:12px;color:var(--ink-subtle);font-weight:500;text-align:right}
+.frow.sub span{font-size:12px;color:var(--ink-tert)}
+.frow.save small{font-weight:400;color:var(--ink-subtle);font-size:11px;display:block;margin-top:1px}
 
 .card{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-xl);padding:24px}
 .card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
@@ -259,9 +314,15 @@ tbody tr.event td{color:var(--ink)}
 
 /* ——— MERCADO ————————————————————————————— */
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px;position:relative}
-.stat::before{content:'';position:absolute;inset:0 0 auto 0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
-.stat .big{font-size:36px;font-weight:600;line-height:1;letter-spacing:-1.4px;color:var(--ink)}
+.stat{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:24px;position:relative;overflow:hidden;animation:cardglow 6s ease-in-out infinite}
+.stat:nth-child(2){animation-delay:-1.5s}.stat:nth-child(3){animation-delay:-3s}.stat:nth-child(4){animation-delay:-4.5s}
+.stat::before{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--primary),transparent);background-size:200% 100%;animation:sheen 7s linear infinite}
+.stat .big{font-size:36px;font-weight:700;line-height:1;letter-spacing:-1.4px;
+  background:var(--brand-grad);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 9s linear infinite}
+@keyframes sheen{0%{background-position:160% 0}100%{background-position:-160% 0}}
+@keyframes shimmer{0%{background-position:0% 0}100%{background-position:220% 0}}
+@keyframes cardglow{0%,100%{box-shadow:0 0 0 rgba(108,187,202,0)}50%{box-shadow:0 8px 30px rgba(108,187,202,.10)}}
+@media (prefers-reduced-motion:reduce){ .stat,.stat::before,.stat .big{animation:none} }
 .stat .cap{font-size:13px;color:var(--ink-subtle);margin-top:12px;line-height:1.4}
 .stat .src{font-size:11px;color:var(--ink-tert);margin-top:6px}
 .market-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
@@ -272,9 +333,11 @@ tbody tr.event td{color:var(--ink)}
 .city-card .selectwrap{min-width:240px}
 .city-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:20px}
 .ckpi{background:var(--canvas);border:1px solid var(--hair);border-radius:var(--r-md);padding:16px}
+.ckpi.accent{position:relative;overflow:hidden;border-color:var(--hair-strong)}
+.ckpi.accent::before{content:'';position:absolute;inset:0 0 auto 0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),var(--primary),transparent);background-size:200% 100%;animation:sheen 7s linear infinite}
+.ckpi.accent .val{background:var(--brand-grad);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 9s linear infinite}
 .ckpi .label{font-size:12px;color:var(--ink-subtle)}
 .ckpi .val{font-size:24px;font-weight:600;color:var(--ink);margin-top:6px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
-.ckpi.accent .val{color:var(--primary-hover)}
 .ckpi .sub{font-size:11px;color:var(--ink-tert);margin-top:3px}
 .city-break{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 .brk{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface-2);border:1px solid var(--hair);border-radius:var(--r-sm);padding:11px 14px}
@@ -288,7 +351,7 @@ tbody tr.event td{color:var(--ink)}
 /* Busca de cidade (autocomplete) */
 .city-search{position:relative;flex:1 1 460px;min-width:280px;max-width:620px}
 .city-search>input{width:100%;height:48px;border:1px solid var(--hair);border-radius:var(--r-md);background:var(--surface-1);padding:0 16px;color:var(--ink);font-size:15px;font-weight:500;text-overflow:ellipsis;transition:border-color .15s ease,box-shadow .15s ease}
-.city-search>input:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(94,105,209,.22)}
+.city-search>input:focus{outline:none;border-color:var(--primary-focus);box-shadow:0 0 0 3px rgba(77,127,232,.22)}
 .city-search>input::placeholder{color:var(--ink-tert);font-weight:400}
 .city-drop{position:absolute;z-index:30;top:50px;left:0;right:0;max-height:320px;overflow-y:auto;
   background:var(--surface-2);border:1px solid var(--hair-strong);border-radius:var(--r-md);
@@ -308,8 +371,61 @@ tbody tr.event td{color:var(--ink)}
 .m-table tr.hi td{color:var(--ink);font-weight:600}
 .m-table tr.hi td:first-child{color:var(--primary-hover)}
 .m-table tr:hover td{background:var(--surface-2)}
+.market-collapse{margin-top:8px}
+.market-collapse>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:15px 20px;font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;color:var(--ink);transition:border-color .2s ease}
+.market-collapse>summary::-webkit-details-marker{display:none}
+.market-collapse>summary small{font-family:'Inter';font-weight:400;font-size:12.5px;color:var(--ink-tert)}
+.market-collapse>summary:hover{border-color:var(--primary)}
+.market-collapse>summary .chev{width:18px;height:18px;color:var(--ink-subtle);transition:transform .2s ease;flex-shrink:0}
+.market-collapse[open]>summary{border-radius:var(--r-lg) var(--r-lg) 0 0}
+.market-collapse[open]>summary .chev{transform:rotate(180deg)}
+.market-collapse .market-grid{margin-top:16px}
 .quote{border-left:2px solid var(--primary);padding:6px 0 6px 22px;font-size:24px;font-weight:500;color:var(--ink);line-height:1.35;letter-spacing:-.4px}
 .pill-tag{display:inline-block;background:var(--surface-3);border:1px solid var(--hair);color:var(--ink-muted);font-size:12px;font-weight:500;padding:4px 12px;border-radius:var(--r-pill);margin-bottom:14px}
+
+/* ——— Gráfico de densidade (100×) ——— */
+.dens{display:flex;flex-direction:column;gap:13px;margin-top:2px}
+.dens-row{display:grid;grid-template-columns:104px 1fr 62px;align-items:center;gap:14px}
+.dens-row .dl{font-size:13px;color:var(--ink-muted);text-align:right;white-space:nowrap}
+.dens-row .dt{height:16px;background:var(--surface-3);border-radius:var(--r-pill);overflow:hidden}
+.dens-row .db{height:100%;min-width:8px;border-radius:var(--r-pill);background:var(--c-frota);transform-origin:left;animation:densgrow 1.1s cubic-bezier(.2,.85,.25,1) both}
+.dens-row:nth-child(2) .db{animation-delay:.06s}.dens-row:nth-child(3) .db{animation-delay:.12s}.dens-row:nth-child(4) .db{animation-delay:.18s}.dens-row:nth-child(5) .db{animation-delay:.24s}
+.dens-row .dv{font-size:13px;font-weight:600;color:var(--ink-subtle);font-variant-numeric:tabular-nums;text-align:right}
+.dens-row.br .dl{color:var(--cyan);font-weight:700}
+.dens-row.br .db{background:linear-gradient(90deg,#6CBBCA,#a7e8ef);box-shadow:0 0 14px rgba(108,187,202,.6)}
+.dens-row.br .dv{color:var(--cyan)}
+.dens-foot{margin-top:18px;font-size:13.5px;color:var(--ink-subtle);line-height:1.5}
+.dens-foot b{color:var(--cyan);font-weight:700}
+@keyframes densgrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* ——— Pilares da oportunidade ——— */
+.pillars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:24px}
+.pillar{background:var(--surface-1);border:1px solid var(--hair);border-radius:var(--r-lg);padding:22px;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.pillar:hover{transform:translateY(-3px);border-color:var(--hair-strong);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.pillar .pic{width:44px;height:44px;border-radius:var(--r-md);background:rgba(108,187,202,.13);display:flex;align-items:center;justify-content:center;color:var(--cyan);margin-bottom:18px}
+.pillar .pic svg{width:23px;height:23px}
+.pillar .pbig{font-family:'Poppins',sans-serif;font-size:30px;font-weight:700;letter-spacing:-1px;line-height:1;background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pillar .pttl{font-family:'Poppins',sans-serif;font-size:15px;font-weight:600;color:var(--ink);margin:9px 0 7px}
+.pillar .ptxt{font-size:13px;color:var(--ink-subtle);line-height:1.5}
+
+/* ——— Frase de fechamento em destaque ——— */
+.quote-hero{position:relative;text-align:center;padding:46px 24px 40px;margin-top:24px;border:1px solid var(--hair-strong);border-radius:var(--r-xl);overflow:hidden;
+  background:radial-gradient(120% 130% at 50% 0%,rgba(38,78,148,.22),transparent 62%),var(--surface-1)}
+.quote-hero .qmark{font-family:'Poppins',sans-serif;font-size:72px;line-height:.4;color:var(--cyan);opacity:.55;margin-bottom:18px}
+.quote-hero p{font-family:'Poppins',sans-serif;font-size:clamp(20px,3vw,28px);font-weight:600;line-height:1.32;letter-spacing:-.4px;color:var(--ink);max-width:26ch;margin:0 auto}
+.quote-hero p b{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ——— Barra de ocupação da cidade ——— */
+.city-occ{margin:18px 0 6px}
+.occ-bar{height:22px;border-radius:var(--r-pill);background:linear-gradient(90deg,#2BD47A,#6CBBCA);overflow:hidden;border:1px solid var(--hair)}
+.occ-fill{height:100%;background:var(--surface-3);border-right:2px solid var(--hair-tert);transition:width .8s cubic-bezier(.2,.85,.25,1)}
+.occ-legend{display:flex;gap:20px;margin-top:11px;font-size:12.5px;color:var(--ink-subtle);flex-wrap:wrap}
+.occ-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:7px;vertical-align:middle}
+.occ-legend .ocup{background:var(--surface-3);border:1px solid var(--hair-tert)} .occ-legend .disp{background:#2BD47A}
+
+@media (max-width:880px){ .pillars{grid-template-columns:1fr 1fr} }
+@media (max-width:560px){ .pillars{grid-template-columns:1fr} .dens-row{grid-template-columns:80px 1fr 56px;gap:10px} }
+@media (prefers-reduced-motion:reduce){ .dens-row .db,.pillar{animation:none;transition:none} }
 
 .disclaimer{background:var(--surface-1);border:1px solid var(--hair);color:var(--ink-subtle);border-radius:var(--r-lg);padding:18px 22px;font-size:13px;line-height:1.6;margin-top:24px}
 .disclaimer strong{color:var(--ink-muted);font-weight:600}
@@ -339,6 +455,7 @@ tbody tr.event td{color:var(--ink)}
   .city-card .selectwrap,.city-card .city-search{min-width:0;width:100%}
   .card-head{align-items:flex-start}
   #c_main{height:210px}
+  .feira-compare{grid-template-columns:1fr}
   .chart-box canvas{height:170px}
 }
 @media (max-width:560px){
@@ -351,6 +468,7 @@ tbody tr.event td{color:var(--ink)}
 </style>
 </head>
 <body class="intro-mode">
+<div class="app-bg" aria-hidden="true"><span class="glow a"></span><span class="glow b"></span><span class="glow c"></span><span class="grid"></span><span class="vled"></span><span class="vled"></span><span class="vled"></span></div>
 
 <!-- ===================== TOP NAV ===================== -->
 <header class="topnav">
@@ -369,7 +487,7 @@ tbody tr.event td{color:var(--ink)}
     <div class="led-lines" aria-hidden="true"><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span><span class="led"></span></div>
     <div class="intro-inner">
       <img class="intro-logo" id="intro-logo" alt="Grupo Avend" />
-      <div class="eyebrow">Grupo Avend · Vending Machines</div>
+      <div class="eyebrow">Grupo Avend · Máquinas Automáticas</div>
       <h1>Simulador de Franquia</h1>
       <p class="lead">Descubra, em minutos, o potencial de uma franquia Avend: projeção financeira mês a mês e análise de mercado por cidade. Conduza o atendimento direto da tela.</p>
       <button class="start-btn" id="start-btn">
@@ -380,7 +498,7 @@ tbody tr.event td{color:var(--ink)}
         <div class="intro-feat">
           <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
           <h4>Simulador Financeiro</h4>
-          <p>Payback, lucro, frota e patrimônio com reinvestimento composto.</p>
+          <p>Retorno, lucro, frota e patrimônio com reinvestimento composto.</p>
         </div>
         <div class="intro-feat">
           <div class="ic"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 8 12 8 12s8-6.6 8-12a8 8 0 0 0-8-8z"/></svg></div>
@@ -419,56 +537,38 @@ tbody tr.event td{color:var(--ink)}
           <input type="range" id="f_fat" min="5000" max="30000" step="500" value="10000">
         </div>
         <div class="field">
-          <div class="row"><label for="f_r1">Reinvestimento · Fase 1</label>
-            <span class="numwrap"><input class="numin" id="n_r1" type="number" min="50" max="100" step="5" value="100" aria-label="Reinvestimento fase 1"><span class="pfx">%</span></span></div>
+          <div class="row"><label for="f_r1">Reinvestimento do lucro</label>
+            <span class="numwrap"><input class="numin" id="n_r1" type="number" min="50" max="100" step="5" value="100" aria-label="Reinvestimento do lucro"><span class="pfx">%</span></span></div>
           <input type="range" id="f_r1" min="50" max="100" step="5" value="100">
         </div>
         <div class="field">
-          <div class="row"><label for="f_d1">Duração da Fase 1</label>
-            <span class="numwrap"><input class="numin" id="n_d1" type="number" min="1" max="10" step="1" value="3" aria-label="Duração fase 1 em anos"><span class="pfx">anos</span></span></div>
-          <input type="range" id="f_d1" min="12" max="120" step="12" value="36">
-        </div>
-        <div class="field">
-          <div class="row"><label for="f_r2">Reinvestimento · Fase 2</label>
-            <span class="numwrap"><input class="numin" id="n_r2" type="number" min="0" max="100" step="5" value="50" aria-label="Reinvestimento fase 2"><span class="pfx">%</span></span></div>
-          <input type="range" id="f_r2" min="0" max="100" step="5" value="50">
-        </div>
-        <div class="field">
-          <div class="row"><label for="f_res">Reserva de capital / máquina</label>
-            <span class="numwrap"><span class="pfx">R$</span><input class="numin" id="n_res" type="number" min="2000" max="10000" step="500" value="5000" aria-label="Reserva de capital"></span></div>
-          <input type="range" id="f_res" min="2000" max="10000" step="500" value="5000">
+          <div class="row"><label for="f_d1">Duração do reinvestimento</label>
+            <span class="numwrap"><input class="numin" id="n_d1" type="number" min="1" max="4" step="1" value="4" aria-label="Duração do reinvestimento em anos"><span class="pfx">anos</span></span></div>
+          <input type="range" id="f_d1" min="12" max="48" step="12" value="48">
         </div>
 
-        <h3>Ritmo de expansão</h3>
-        <div class="selectwrap">
-          <label for="f_cap">Capacidade de implantação</label>
-          <select id="f_cap">
-            <option value="1">1 máquina / mês</option>
-            <option value="2" selected>2 máquinas / mês</option>
-            <option value="3">3 máquinas / mês</option>
-            <option value="4">4 máquinas / mês</option>
-            <option value="5">5 máquinas / mês</option>
-          </select>
-        </div>
-        <div class="selectwrap">
-          <label for="f_hor">Horizonte da projeção</label>
-          <select id="f_hor">
-            <option value="36">3 anos</option>
-            <option value="48">4 anos</option>
-            <option value="60" selected>5 anos</option>
-            <option value="84">7 anos</option>
-            <option value="120">10 anos</option>
-          </select>
-        </div>
       </aside>
 
       <!-- Resultados -->
       <div class="results">
         <div class="hero-kpis">
-          <div class="kpi feature"><div class="label">Payback · 1ª máquina</div><div class="val" id="k_payback">—</div><div class="sub">Média da rede · cenário base</div></div>
+          <div class="kpi feature"><div class="label">Tempo de retorno · 1ª máquina</div><div class="val" id="k_payback">—</div><div class="sub" id="k_payback_sub">—</div></div>
           <div class="kpi"><div class="label">Margem líquida</div><div class="val" id="k_margem">—</div><div class="sub" id="k_margem_sub">Operação madura</div></div>
           <div class="kpi"><div class="label">Máquinas no horizonte</div><div class="val" id="k_frota">—</div><div class="sub" id="k_frota_sub">Projeção</div></div>
           <div class="kpi"><div class="label">Lucro mensal final</div><div class="val" id="k_lucrofinal">—</div><div class="sub" id="k_lucrofinal_sub">Operação madura</div></div>
+        </div>
+
+        <div class="card feira-card">
+          <div class="card-head">
+            <h3>⚡ Condição da Feira</h3>
+            <button class="feira-btn" id="feira-toggle" type="button" aria-pressed="false">
+              <svg class="ic ic-bolt" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+              <svg class="ic ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg>
+              <span>Aplicar na projeção</span>
+            </button>
+          </div>
+          <div class="feira-offer" id="feira-offer"></div>
+          <div class="feira-compare" id="feira-compare"></div>
         </div>
 
         <div class="card">
@@ -552,18 +652,52 @@ tbody tr.event td{color:var(--ink)}
         </div>
       </div>
       <div class="city-kpis" id="city-kpis"></div>
-      <div class="city-break" id="city-break"></div>
+      <div class="city-occ" id="city-occ"></div>
       <div class="city-note" id="city-note"></div>
     </div>
 
-    <div class="stat-row">
-      <div class="stat"><div class="big">100×</div><div class="cap">Gap de densidade Brasil × Japão</div><div class="src">Statista · ABVM</div></div>
-      <div class="stat"><div class="big">R$ 1,3 bi+</div><div class="cap">Faturamento do setor no Brasil</div><div class="src">ABVM 2020</div></div>
-      <div class="stat"><div class="big">11,58%</div><div class="cap">CAGR smart vending até 2032</div><div class="src">Grand View Research</div></div>
-      <div class="stat"><div class="big">57%</div><div class="cap">Ocupações no comércio com falta de mão de obra</div><div class="src">CNC jul/2025</div></div>
+    <div class="card">
+      <div class="card-head"><h3>Densidade de máquinas — o tamanho do buraco</h3></div>
+      <div class="dens">
+        <div class="dens-row"><span class="dl">Japão</span><div class="dt"><div class="db" style="width:100%"></div></div><span class="dv">1 : 25</span></div>
+        <div class="dens-row"><span class="dl">EUA</span><div class="dt"><div class="db" style="width:38%"></div></div><span class="dv">1 : 65</span></div>
+        <div class="dens-row"><span class="dl">Coreia do Sul</span><div class="dt"><div class="db" style="width:38%"></div></div><span class="dv">1 : 65</span></div>
+        <div class="dens-row"><span class="dl">China</span><div class="dt"><div class="db" style="width:5%"></div></div><span class="dv">1 : 500</span></div>
+        <div class="dens-row br"><span class="dl">Brasil</span><div class="dt"><div class="db" style="width:1%"></div></div><span class="dv">1 : 2.500</span></div>
+      </div>
+      <div class="dens-foot">Máquinas por habitante. O Brasil tem <b>100× menos</b> máquinas que o Japão — um mercado praticamente virgem.</div>
     </div>
 
-    <div class="market-grid">
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1.5-5h15L21 9"/><path d="M4 9v11h16V9"/><path d="M9 20v-6h6v6"/></svg></div>
+        <div class="pbig">100×</div>
+        <div class="pttl">Mercado quase virgem</div>
+        <div class="ptxt">1 máquina para cada 2.500 habitantes no Brasil — contra 1 para cada 25 no Japão.</div>
+      </div>
+      <div class="pillar">
+        <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M16 8.2a3 3 0 0 1 0 5.6"/><path d="M21 20c0-2.2-1.4-3.6-3.5-4.2"/></svg></div>
+        <div class="pbig">57%</div>
+        <div class="pttl">Falta gente, sobra custo</div>
+        <div class="ptxt">57% do comércio sem mão de obra; um CLT custa até 3× o salário. A máquina vende 24h, não falta, não tira férias.</div>
+      </div>
+      <div class="pillar">
+        <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="2" width="11" height="20" rx="2.5"/><path d="M10.5 18h3"/></svg></div>
+        <div class="pbig">90%+</div>
+        <div class="pttl">Brasil é Pix</div>
+        <div class="ptxt">9 em 10 adultos pagam por Pix. Venda na hora, sem troco e sem dinheiro parado na máquina.</div>
+      </div>
+      <div class="pillar">
+        <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M16 7h5v5"/></svg></div>
+        <div class="pbig">+11,58%<span style="font-size:.5em">/ano</span></div>
+        <div class="pttl">Setor em alta</div>
+        <div class="ptxt">Mercado de R$ 1,3 bi crescendo dois dígitos ao ano até 2032.</div>
+      </div>
+    </div>
+
+    <details class="market-collapse">
+      <summary><span>Ver fontes e dados detalhados <small>· densidade · mão de obra · setor · pagamentos</small></span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="market-grid">
       <div class="card">
         <div class="card-head"><h3>Densidade global</h3></div>
         <div class="table-scroll"><table class="m-table">
@@ -597,44 +731,31 @@ tbody tr.event td{color:var(--ink)}
           <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
           <tbody>
             <tr><td>Crescimento anual do setor</td><td><b>10–15%</b> desde 2018</td></tr>
-            <tr><td>CAGR automação varejo Brasil até 2030</td><td><b>6,2%</b> (maior do mundo)</td></tr>
-            <tr><td>Mercado global de vending (2024→2030)</td><td>US$ 27,7 → 34,9 bi</td></tr>
-            <tr><td>Snacks e bebidas (segmento Avend)</td><td>~35% do mercado</td></tr>
+            <tr><td>Crescimento anual da automação do varejo no Brasil (até 2030)</td><td><b>6,2%</b> (maior do mundo)</td></tr>
+            <tr><td>Mercado global de máquinas automáticas (2024→2030)</td><td>US$ 27,7 → 34,9 bi</td></tr>
+            <tr><td>Lanches e bebidas (segmento Avend)</td><td>~35% do mercado</td></tr>
           </tbody>
         </table></div>
       </div>
 
       <div class="card">
-        <div class="card-head"><h3>Cashless</h3></div>
-        <span class="pill-tag">Pix · débito · crédito · NFC</span>
+        <div class="card-head"><h3>Pagamentos digitais</h3></div>
+        <span class="pill-tag">Pix · débito · crédito · aproximação</span>
         <div class="table-scroll"><table class="m-table">
           <thead><tr><th>Indicador</th><th>Valor</th></tr></thead>
           <tbody>
             <tr><td>Pix · penetração entre adultos brasileiros</td><td><b>90%+</b></td></tr>
-            <tr><td>Cashless · share global da receita de vending</td><td><b>75,8%</b></td></tr>
+            <tr><td>Pagamento sem dinheiro · participação na receita global do setor</td><td><b>75,8%</b></td></tr>
             <tr><td>Máquinas de café (fora do segmento Avend)</td><td>~65% do mercado</td></tr>
           </tbody>
         </table></div>
       </div>
-
-      <div class="card span-2">
-        <div class="card-head"><h3>Potencial de pontos por cidade</h3></div>
-        <div class="table-scroll"><table class="m-table">
-          <thead><tr><th>Tier</th><th>População</th><th>Multiplicadores de pontos premium (por 100k hab)</th></tr></thead>
-          <tbody>
-            <tr><td>Micro</td><td>&lt; 30 mil hab</td><td rowspan="5" style="vertical-align:middle;border-left:1px solid var(--hair)">
-              Hospitais/clínicas <b>×3</b> · Indústrias/galpões <b>×8</b> · Academias de rede <b>×15</b> · Polos corporativos <b>×5</b> · Empresas 50+ funcionários <b>×30</b></td></tr>
-            <tr><td>Pequena</td><td>30k – 100k hab</td></tr>
-            <tr><td>Média</td><td>100k – 500k hab</td></tr>
-            <tr><td>Grande</td><td>500k – 2M hab</td></tr>
-            <tr><td>Metrópole</td><td>&gt; 2M hab</td></tr>
-          </tbody>
-        </table></div>
       </div>
+    </details>
 
-      <div class="card span-2">
-        <p class="quote">"O Brasil tem 1 máquina para cada 2.500 habitantes… não é uma anomalia — é uma janela de oportunidade se abrindo."</p>
-      </div>
+    <div class="quote-hero">
+      <div class="qmark">“</div>
+      <p>O Brasil tem 1 máquina para cada 2.500 habitantes… não é uma anomalia — é uma <b>janela de oportunidade</b> se abrindo.</p>
     </div>
 
     <div class="footer">
@@ -657,7 +778,7 @@ const MODEL = {
   royaltyMinimo:250,
   fixoPorMaquina:{ fnp:100, sistema:95, manutencao:100 },
   custoPrimeiraMaquina:55000, custoMaquinaAdicional:35000, custoFreteNova:2000,
-  custoAbastecimentoInicial:1500, valorAtivoPorMaquina:28500,
+  custoAbastecimentoInicial:1500, valorAtivoPorMaquina:23990*0.70,  // R$23.990 com 30% de depreciação = R$16.793
   mei:{ limiteAnual:130000, fixoMensal:85 },
   simplesNacionalFaixas:[
     { teto:180000,  nominal:.0400, deducao:0 },
@@ -678,7 +799,27 @@ function calcImpostoMensal(fm){
   }
   return { regime:"Lucro Presumido", valor:fm*.25, aliquota:.25 };
 }
-function calcularMes(frota, fpm){
+// Simples efetivo (sem MEI) sobre um faturamento mensal dentro de 1 CNPJ
+function simplesEfetivoMensal(fm){
+  const rbt12 = fm*12;
+  for(const f of MODEL.simplesNacionalFaixas){
+    if(rbt12 <= f.teto){ return fm*((rbt12*f.nominal-f.deducao)/rbt12); }
+  }
+  const f=MODEL.simplesNacionalFaixas[5];           // teto do Simples (fallback)
+  return fm*((rbt12*f.nominal-f.deducao)/rbt12);
+}
+// Múltiplos CNPJs no Simples: enche cada CNPJ até o teto (R$4,8M/ano) e soma o Simples de cada um
+function impostoSimplesMulti(ftMensal){
+  const tetoMensal = MODEL.simplesNacionalFaixas[5].teto/12;   // 4.800.000 / 12 = 400.000
+  let resto=ftMensal, tax=0, cnpjs=0;
+  while(resto > 0.01){
+    const parcela = Math.min(resto, tetoMensal);
+    tax += simplesEfetivoMensal(parcela);
+    resto -= parcela; cnpjs++;
+  }
+  return { valor:tax, cnpjs };
+}
+function calcularMes(frota, fpm, regimeMode){
   const ft = frota*fpm;
   const royaltyPorMaq = Math.max(fpm*MODEL.variavel.royalties, MODEL.royaltyMinimo);
   const royaltyTotal = royaltyPorMaq*frota;
@@ -687,20 +828,28 @@ function calcularMes(frota, fpm){
   const fixoMaqTotal = frota*(MODEL.fixoPorMaquina.fnp+MODEL.fixoPorMaquina.sistema+MODEL.fixoPorMaquina.manutencao);
   const nAbast = frota>=MODEL.abastecedor.frotaMinParaContratar ? Math.floor(frota/MODEL.abastecedor.maqPorAbastecedor) : 0;
   const custoAbast = nAbast*MODEL.abastecedor.salarioMensal;
-  const imposto = calcImpostoMensal(ft);
+  // Imposto: 'unico' = frota como 1 CNPJ; 'multi' = vários CNPJs no Simples, cada um até o teto (R$4,8M/ano)
+  let imposto;
+  if(regimeMode==='multi'){
+    const r = impostoSimplesMulti(ft);
+    imposto = { valor:r.valor, regime:`Simples · ${r.cnpjs} CNPJ${r.cnpjs>1?'s':''}`, aliquota:r.valor/ft };
+  } else {
+    imposto = calcImpostoMensal(ft);
+  }
   const lucroLiquido = ft-custoVariavel-fixoMaqTotal-custoAbast-imposto.valor;
   return { faturamentoTotal:ft, fixoMaqTotal, custoAbast, nAbast, imposto, lucroLiquido, margem:lucroLiquido/ft };
 }
 function simulate(p){
-  const custoNovaMaquina = MODEL.custoMaquinaAdicional+p.reservaCapital+MODEL.custoFreteNova+MODEL.custoAbastecimentoInicial;
+  const custoEquip = p.custoEquipAdicional ?? MODEL.custoMaquinaAdicional;   // feira: 23990 vs 35000
+  const custoNovaMaquina = custoEquip+MODEL.custoFreteNova+MODEL.custoAbastecimentoInicial;  // sem reserva (2ª máq+)
   let maquinasAtivas=1, maquinasPendentes=0, caixa=0, lucroAcumulado=0, contador=1, paybackMeses=null;
   const linhas=[];
   for(let mes=1; mes<=p.horizonteMeses; mes++){
     if(maquinasPendentes>0){ maquinasAtivas+=maquinasPendentes; maquinasPendentes=0; }
-    const m = calcularMes(maquinasAtivas, p.faturamentoPorMaquina);
+    const m = calcularMes(maquinasAtivas, p.faturamentoPorMaquina, p.regimeMode);
     lucroAcumulado += m.lucroLiquido;
     if(paybackMeses===null && lucroAcumulado>=MODEL.custoPrimeiraMaquina) paybackMeses=mes;
-    const perc = mes<=p.duracaoFase1Meses ? p.percReinvestFase1 : p.percReinvestFase2;
+    const perc = mes<=p.duracaoFase1Meses ? p.percReinvestFase1 : 0;   // após o período: 100% pró-labore
     const proLabore = m.lucroLiquido*(1-perc/100);
     caixa += m.lucroLiquido*(perc/100);
     let comp=0; const ev=[];
@@ -720,23 +869,31 @@ function simulate(p){
 }
 
 const PRESETS = {
-  conservador:{ f_fat:7000,  f_r1:100, f_d1:36, f_r2:50,  f_res:5000, f_cap:'1', f_hor:'60' },
-  base:       { f_fat:10000, f_r1:100, f_d1:36, f_r2:50,  f_res:5000, f_cap:'2', f_hor:'60' },
-  otimista:   { f_fat:15000, f_r1:100, f_d1:48, f_r2:70,  f_res:5000, f_cap:'3', f_hor:'60' },
-  turbo:      { f_fat:12000, f_r1:100, f_d1:60, f_r2:100, f_res:5000, f_cap:'3', f_hor:'84' }
+  conservador:{ f_fat:7000,  f_r1:100, f_d1:48 },
+  base:       { f_fat:9000,  f_r1:100, f_d1:48 },
+  otimista:   { f_fat:11500, f_r1:100, f_d1:48 },
+  turbo:      { f_fat:15000, f_r1:100, f_d1:48 }
 };
 
 const brl = new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0});
 const fmtR$ = v => brl.format(Math.round(v));
 const fmtPct = v => (v*100).toFixed(1).replace('.',',')+'%';
 const kBRL = v => Math.abs(v)>=1000 ? 'R$'+(v/1000).toFixed(0)+'k' : 'R$'+Math.round(v);
+// formato legível p/ valores grandes em cards: R$ 9,5 mi · R$ 504 mil · R$ 1,2 bi
+function fmtBig(v){
+  v=Math.round(v); const a=Math.abs(v);
+  if(a>=1e9) return 'R$ '+(v/1e9).toFixed(1).replace('.',',')+' bi';
+  if(a>=1e6) return 'R$ '+(v/1e6).toFixed(1).replace('.',',')+' mi';
+  if(a>=1e3) return 'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil';
+  return fmtR$(v);
+}
 function fmtPayback(m){ if(m===null)return'—'; if(m<12)return m+' meses'; const a=Math.floor(m/12),r=m%12; return r===0?a+(a>1?' anos':' ano'):`${a}a ${r}m`; }
 function fmtAnos(meses){ const a=meses/12; return Number.isInteger(a)?a+(a>1?' anos':' ano'):meses+' meses'; }
 
 /* ============================================================
    Gráficos com hover + tooltip (canvas, tema dark Linear)
    ============================================================ */
-const GRID='#23252a', AXIS='#62666d', CROSS='#3e3e44', POINT_BG='#010102';
+const GRID='#2f3766', AXIS='#8088b0', CROSS='#56649C', POINT_BG='#181D3E';
 const tip = document.getElementById('tip');
 const CHARTS = {};
 
@@ -802,6 +959,7 @@ function bindHover(canvas, cfg){
     let i=Math.round((cx-rect.left-g.padL)/(g.stepX||1)); i=Math.max(0,Math.min(g.n-1,i));
     drawChart(canvas, cfg, i);
     let html=`<div class="t-m">Mês ${cfg.labels[i]}</div>`;
+    if(cfg.maquinas) html+=`<div class="t-r"><span>Máquinas em operação</span><span>${cfg.maquinas[i]}</span></div>`;
     cfg.series.forEach(s=>{ html+=`<div class="t-r"><span><i style="background:${s.color}"></i>${s.name}</span><span>${cfg.fmtTip(s.data[i])}</span></div>`; });
     tip.innerHTML=html; tip.style.opacity='1';
     const tw=tip.offsetWidth, th=tip.offsetHeight;
@@ -823,18 +981,23 @@ function redraw(id){ const c=document.getElementById(id); if(c&&CHARTS[id]) draw
    ============================================================ */
 const $ = id => document.getElementById(id);
 let R = null;
+const VALOR_FEIRA = 23990;                                  // equipamento da 2ª máquina+ na feira
+const ECON_FEIRA = MODEL.custoMaquinaAdicional - VALOR_FEIRA; // economia por máquina (11.010)
+let feiraOn = false;
 
 function readParams(){
   return {
     faturamentoPorMaquina:+$('f_fat').value, percReinvestFase1:+$('f_r1').value,
-    duracaoFase1Meses:+$('f_d1').value, percReinvestFase2:+$('f_r2').value,
-    reservaCapital:+$('f_res').value, capacidadeImplantacao:+$('f_cap').value, horizonteMeses:+$('f_hor').value
+    duracaoFase1Meses:+$('f_d1').value,
+    capacidadeImplantacao:2,   // fixo: 2 máquinas/mês
+    horizonteMeses:48,         // fixo: 4 anos
+    regimeMode:'multi'         // fixo: múltiplos CNPJs (Simples Nacional)
   };
 }
 /* Campos numéricos editáveis ligados aos sliders. d1 exibido em anos. */
 const NUM=[ {r:'f_fat',n:'n_fat'},{r:'f_r1',n:'n_r1'},
   {r:'f_d1',n:'n_d1',toN:m=>m/12,toR:y=>Math.round(y)*12},
-  {r:'f_r2',n:'n_r2'},{r:'f_res',n:'n_res'} ];
+  ];
 function clampStep(v,min,max,step){ v=Math.round((v-min)/step)*step+min; return Math.max(min,Math.min(max,v)); }
 function syncOutputs(){
   NUM.forEach(it=>{ const ni=$(it.n); if(ni && document.activeElement!==ni){ const rv=+$(it.r).value; ni.value=it.toN?it.toN(rv):rv; } });
@@ -844,21 +1007,21 @@ function buildMainChart(){
   const L=R.linhas, labels=L.map(l=>l.mes), metric=$('metric').value;
   let series, legend;
   if(metric==='fatlucro'){
-    series=[ {name:'Faturamento',data:L.map(l=>l.faturamentoTotal),color:'#5e6ad2',fill:true},
-             {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#27a644'} ];
-    legend='<span><i style="background:#5e6ad2"></i>Faturamento</span><span><i style="background:#27a644"></i>Lucro líquido</span>';
+    series=[ {name:'Faturamento',data:L.map(l=>l.faturamentoTotal),color:'#4d7fe8',fill:true},
+             {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#2BD47A'} ];
+    legend='<span><i style="background:#4d7fe8"></i>Faturamento</span><span><i style="background:#2BD47A"></i>Lucro líquido</span>';
   } else if(metric==='lucro'){
-    series=[ {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#27a644',fill:true} ];
-    legend='<span><i style="background:#27a644"></i>Lucro líquido mensal</span>';
+    series=[ {name:'Lucro líquido',data:L.map(l=>l.lucroLiquido),color:'#2BD47A',fill:true} ];
+    legend='<span><i style="background:#2BD47A"></i>Lucro líquido mensal</span>';
   } else if(metric==='patrimonio'){
-    series=[ {name:'Patrimônio',data:L.map(l=>l.patrimonio),color:'#7a7fad',fill:true} ];
-    legend='<span><i style="background:#7a7fad"></i>Patrimônio em máquinas</span>';
+    series=[ {name:'Patrimônio',data:L.map(l=>l.patrimonio),color:'#8b7fd6',fill:true} ];
+    legend='<span><i style="background:#8b7fd6"></i>Patrimônio em máquinas</span>';
   } else {
-    series=[ {name:'Caixa',data:L.map(l=>l.caixaAcumulado),color:'#828fff',fill:true} ];
-    legend='<span><i style="background:#828fff"></i>Caixa de expansão</span>';
+    series=[ {name:'Caixa',data:L.map(l=>l.caixaAcumulado),color:'#6CBBCA',fill:true} ];
+    legend='<span><i style="background:#6CBBCA"></i>Caixa de expansão</span>';
   }
   $('legend_main').innerHTML=legend;
-  bindHover($('c_main'), { series, labels, fmtY:kBRL, fmtTip:fmtR$, padL:54 });
+  bindHover($('c_main'), { series, labels, maquinas:L.map(l=>l.maquinasAtivas), fmtY:kBRL, fmtTip:fmtR$, padL:54 });
   drawChart($('c_main'), CHARTS['c_main'], null);
 }
 
@@ -884,9 +1047,12 @@ function buildTable(){
 
 function render(){
   syncOutputs();
-  const p=readParams(); R=simulate(p);
+  const p=readParams();
+  p.custoEquipAdicional = feiraOn ? VALOR_FEIRA : MODEL.custoMaquinaAdicional;  // condição da feira
+  R=simulate(p);
 
   $('k_payback').textContent=fmtPayback(R.paybackMeses);
+  $('k_payback_sub').textContent=`Lucro acumulado cobre a entrada · ${fmtR$(MODEL.custoPrimeiraMaquina)}`;
   $('k_margem').textContent=fmtPct(R.margemFinal);   // margem na escala (frota + impostos)
   $('k_margem_sub').textContent=`Operação madura · ${R.frotaFinal} máq · ${R.regimeFinal}`;
   $('k_frota').textContent=R.frotaFinal;
@@ -902,19 +1068,53 @@ function render(){
   $('m_patrimonio').textContent=fmtR$(R.patrimonioFinal);
 
   buildMainChart();
-  bindHover($('c_frota'), { series:[{name:'Máquinas',data:R.linhas.map(l=>l.maquinasAtivas),color:'#9aa2ff',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:v=>Math.round(v), fmtTip:v=>Math.round(v)+' máq.', padL:40 });
+  bindHover($('c_frota'), { series:[{name:'Máquinas',data:R.linhas.map(l=>l.maquinasAtivas),color:'#7fa8ff',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:v=>Math.round(v), fmtTip:v=>Math.round(v)+' máq.', padL:40 });
   drawChart($('c_frota'),CHARTS['c_frota'],null);
-  bindHover($('c_caixa'), { series:[{name:'Caixa',data:R.linhas.map(l=>l.caixaAcumulado),color:'#828fff',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:kBRL, fmtTip:fmtR$, padL:54 });
+  bindHover($('c_caixa'), { series:[{name:'Caixa',data:R.linhas.map(l=>l.caixaAcumulado),color:'#6CBBCA',fill:true}], labels:R.linhas.map(l=>l.mes), fmtY:kBRL, fmtTip:fmtR$, padL:54 });
   drawChart($('c_caixa'),CHARTS['c_caixa'],null);
   buildTable();
   buildCityDashboard();   // recalcula o potencial de cidade com o faturamento atual
+  buildFeiraCompare();    // comparativo Normal × Feira com os parâmetros atuais
+}
+
+/* Comparativo Condição Normal × Condição da Feira (mesmos parâmetros) */
+function buildFeiraCompare(){
+  $('feira-offer').innerHTML=`Da <b>2ª máquina em diante</b>, equipamento por <b>${fmtR$(VALOR_FEIRA)}</b> (vs. ${fmtR$(MODEL.custoMaquinaAdicional)}) — economia de <b>${fmtR$(ECON_FEIRA)} por máquina</b>. Frete e estoque se mantêm; sem reserva de capital.`;
+  const base=readParams();
+  const N=simulate({...base, custoEquipAdicional:MODEL.custoMaquinaAdicional});
+  const F=simulate({...base, custoEquipAdicional:VALOR_FEIRA});
+  const dFrota=F.frotaFinal-N.frotaFinal;
+  const dLucro=F.lucroMensalFinal-N.lucroMensalFinal;
+  const dPatr=F.patrimonioFinal-N.patrimonioFinal;
+  const economiaExtra=Math.max(0,dFrota)*ECON_FEIRA;         // economia sobre as máquinas a mais
+  const delta = v => v>0 ? `<span class="delta">+${fmtR$(v)}</span>` : '';
+  const deltaN = v => v>0 ? `<span class="delta">+${v}</span>` : '';
+  const col = (S,extra='') => `
+      <div class="frow"><span>Frota no horizonte</span><b>${S.frotaFinal} máq ${extra?deltaN(dFrota):''}</b></div>
+      <div class="frow"><span>Lucro mensal final</span><b>${fmtR$(S.lucroMensalFinal)} ${extra?delta(dLucro):''}</b></div>
+      <div class="frow sub"><span>Regime · margem líq.</span><b>${S.regimeFinal} · ${fmtPct(S.margemFinal)}</b></div>
+      <div class="frow"><span>Patrimônio acumulado</span><b>${fmtR$(S.patrimonioFinal)} ${extra?delta(dPatr):''}</b></div>`;
+  $('feira-compare').innerHTML=`
+    <div class="fcol ${!feiraOn?'active':''}">
+      <div class="fcol-h">Condição normal ${!feiraOn?'<span class="on">ativo</span>':''}</div>
+      <div class="frow"><span>Equipamento / máq adicional</span><b>${fmtR$(MODEL.custoMaquinaAdicional)}</b></div>
+      <div class="frow"><span>Investimento total / máq</span><b>${fmtR$(N.custoNovaMaquina)}</b></div>
+      ${col(N)}
+    </div>
+    <div class="fcol feira ${feiraOn?'active':''}">
+      <div class="fcol-h">Condição da feira ${feiraOn?'<span class="on">ativo</span>':''}</div>
+      <div class="frow"><span>Equipamento / máq adicional</span><b>${fmtR$(VALOR_FEIRA)}</b></div>
+      <div class="frow"><span>Investimento total / máq</span><b>${fmtR$(F.custoNovaMaquina)}</b></div>
+      ${col(F,true)}
+      <div class="frow save"><span>Economia em equipamento <small>(${Math.max(0,dFrota)} máq a mais)</small></span><b>${fmtR$(economiaExtra)}</b></div>
+    </div>`;
 }
 
 /* ============================================================
    Dashboard de cidade — cruza população (IBGE aprox.) com os
    dados do handoff: tiers, multiplicadores premium e densidade.
    ============================================================ */
-/* Base IBGE (Censo 2022) carregada de cities-br.js: [nome, UF, pop] */
+/* Base IBGE (Estimativa populacional 2025) carregada de cities-br.js: [nome, UF, pop] */
 const MUN = (window.CIDADES_BR||[]).map(c=>({nome:c[0],uf:c[1],pop:c[2],tipo:'cidade'}));
 const EST = (window.ESTADOS_BR||[]).map(c=>({nome:c[0],uf:c[1],pop:c[2],tipo:'estado'}));
 const LOCS = EST.concat(MUN);
@@ -927,34 +1127,31 @@ const TIERS=[
   {max:2000000,  tier:'Grande',    label:'Grande'},
   {max:Infinity, tier:'Metrópole', label:'Metrópole'}
 ];
-const PREMIUM=[
-  {k:'Hospitais / clínicas',f:3},{k:'Indústrias / galpões',f:8},
-  {k:'Academias de rede',f:15},{k:'Polos corporativos',f:5},
-  {k:'Empresas 50+ func.',f:30}
-];
-const DENS_BR=2500, DENS_JP=25;
+const DENS_BR=2500;          // 1 máquina instalada a cada 2.500 hab
+const HAB_POR_PONTO=400;     // 1 ponto possível a cada 400 hab
 const fmtNum = n => new Intl.NumberFormat('pt-BR').format(Math.round(n));
 const tierOf = pop => TIERS.find(t=>pop<=t.max);
 
 function buildCityDashboard(){
   const c=selectedLoc; if(!c) return;
-  const pop=c.pop, t=tierOf(pop), per100k=pop/100000;
-  const premium=PREMIUM.map(p=>({k:p.k,f:p.f,n:Math.round(p.f*per100k)}));
-  const totalPremium=premium.reduce((s,p)=>s+p.n,0);
-  const maqHoje=Math.round(pop/DENS_BR);
-  const potJapao=Math.round(pop/DENS_JP);
-  const fatBase=+$('f_fat').value;                 // ← cruza com o simulador
-  const fatPotencial=totalPremium*fatBase;
-  const escopo = c.tipo==='estado' ? `Estado · ${c.nome}` : `${t.tier} · ${t.label}`;
+  const pop=c.pop, t=tierOf(pop);
+  const pontosPossiveis=Math.floor(pop/HAB_POR_PONTO);              // pop ÷ 400
+  const maquinasExistentes=Math.floor(pop/DENS_BR);                 // pop ÷ 2.500
+  const pontosDisponiveis=Math.max(0,pontosPossiveis-maquinasExistentes);
+  const fatBase=+$('f_fat').value;                                 // ← cruza com o simulador
+  const fatPotencial=pontosDisponiveis*fatBase;
 
   $('city-kpis').innerHTML=`
     <div class="ckpi"><div class="label">População</div><div class="val">${fmtNum(pop)}</div><div class="sub"><span class="tier-pill">${c.tipo==='estado'?'Estado':t.tier}</span> ${c.tipo==='estado'?c.uf:t.label}</div></div>
-    <div class="ckpi"><div class="label">Máquinas hoje (densidade BR)</div><div class="val">${fmtNum(maqHoje)}</div><div class="sub">1 : ${fmtNum(DENS_BR)} hab</div></div>
-    <div class="ckpi accent"><div class="label">Pontos premium estimados</div><div class="val">${fmtNum(totalPremium)}</div><div class="sub">alvos de alta conversão</div></div>
-    <div class="ckpi"><div class="label">Faturamento potencial / mês</div><div class="val">${kBRL(fatPotencial)}</div><div class="sub">${fmtNum(totalPremium)} pts × ${fmtR$(fatBase)}</div></div>
-    <div class="ckpi"><div class="label">Teto · densidade Japão</div><div class="val">${fmtNum(potJapao)}</div><div class="sub">1 : ${DENS_JP} hab</div></div>`;
-  $('city-break').innerHTML=premium.map(p=>`<div class="brk"><span class="n">${p.k}</span><span class="v">${fmtNum(p.n)} <small>×${p.f}/100k</small></span></div>`).join('');
-  $('city-note').innerHTML=`Síntese cruzando a <b>população de ${locLabel(c)}</b> (IBGE · Censo 2022) com os multiplicadores de pontos premium do handoff (por 100k hab) e a densidade brasileira (1:${fmtNum(DENS_BR)}). O faturamento potencial usa o <b>faturamento/máquina do simulador (${fmtR$(fatBase)})</b> — ajuste-o na aba Simulador para recalcular.`;
+    <div class="ckpi"><div class="label">Pontos existentes possíveis</div><div class="val">${fmtNum(pontosPossiveis)}</div><div class="sub">1 ponto a cada ${HAB_POR_PONTO} hab</div></div>
+    <div class="ckpi"><div class="label">Máquinas instaladas na cidade</div><div class="val">${fmtNum(maquinasExistentes)}</div><div class="sub">densidade BR · 1 : ${fmtNum(DENS_BR)} hab</div></div>
+    <div class="ckpi accent"><div class="label">Pontos disponíveis</div><div class="val">${fmtNum(pontosDisponiveis)}</div><div class="sub">pontos ainda sem máquina</div></div>
+    <div class="ckpi"><div class="label">Faturamento potencial / mês</div><div class="val">${fmtBig(fatPotencial)}</div><div class="sub">${fmtNum(pontosDisponiveis)} pts × ${fmtR$(fatBase)}</div></div>`;
+  const ocupPct = pontosPossiveis>0 ? Math.min(100,(maquinasExistentes/pontosPossiveis)*100) : 0;
+  $('city-occ').innerHTML=`
+    <div class="occ-bar"><div class="occ-fill" style="width:${ocupPct.toFixed(1)}%"></div></div>
+    <div class="occ-legend"><span><i class="ocup"></i>${fmtNum(maquinasExistentes)} máquinas instaladas (${ocupPct.toFixed(0)}%)</span><span><i class="disp"></i>${fmtNum(pontosDisponiveis)} pontos disponíveis (${(100-ocupPct).toFixed(0)}%)</span></div>`;
+  $('city-note').innerHTML=`Cálculo para <b>${locLabel(c)}</b> (IBGE · Estimativa 2025): <b>pontos existentes</b> = população ÷ ${HAB_POR_PONTO}; <b>máquinas instaladas</b> = população ÷ ${fmtNum(DENS_BR)}; <b>pontos disponíveis</b> = a diferença. O faturamento potencial usa os pontos disponíveis × <b>faturamento/máquina do simulador (${fmtR$(fatBase)})</b>.`;
 }
 
 let raf=null;
@@ -967,7 +1164,7 @@ function applyPreset(name){
   render();
 }
 document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>applyPreset(c.dataset.preset)));
-['f_fat','f_r1','f_d1','f_r2','f_res'].forEach(id=>$(id).addEventListener('input',()=>{
+['f_fat','f_r1','f_d1'].forEach(id=>$(id).addEventListener('input',()=>{
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); scheduleRender();
 }));
 // Inputs numéricos digitáveis → atualizam o slider correspondente
@@ -1031,11 +1228,9 @@ NUM.forEach(it=>{
   // valor inicial
   if(selectedLoc) inp.value=locLabel(selectedLoc);
 })();
-['f_cap','f_hor'].forEach(id=>$(id).addEventListener('change',()=>{
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); render();
-}));
 $('metric').addEventListener('change',buildMainChart);
 $('tableview').addEventListener('change',buildTable);
+$('feira-toggle').addEventListener('click',()=>{ feiraOn=!feiraOn; const b=$('feira-toggle'); b.classList.toggle('on',feiraOn); b.setAttribute('aria-pressed',feiraOn); render(); });
 
 function goPage(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
